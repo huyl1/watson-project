@@ -25,6 +25,12 @@
       <version>4.11</version>
       <scope>test</scope>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-core -->
+    <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-core</artifactId>
+        <version>9.5.0</version>
+    </dependency>
   </dependencies>
 
   <build>
