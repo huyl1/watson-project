@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.custom.CustomAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
@@ -13,7 +15,7 @@ import org.apache.lucene.store.FSDirectory;
 
 public class IndexBuilder {
     public static void main(String[] args) throws IOException {
-        buildIndexVersion1("V1");
+        buildIndexVersion2("V2");
     }
 
     public static void buildIndexExample(String index_name) throws IOException {
@@ -36,6 +38,7 @@ public class IndexBuilder {
 
     /**
      * Builds an index for the wikipedia subset.
+     * No techniques used
      * @param index_name
      * @throws IOException
      */
@@ -43,6 +46,85 @@ public class IndexBuilder {
         int count = 0;
         Directory dir = FSDirectory.open(new File("indicies/" + index_name).toPath());
         IndexWriterConfig config = new IndexWriterConfig(new StandardAnalyzer());
+        IndexWriter writer = new IndexWriter(dir, config);
+
+        //Run WikipediaParse on all files in dataset/wiki-subset-20140602
+        File folder = new File("dataset/wiki-subset-20140602");
+        File[] listOfFiles = folder.listFiles();
+        for (File file : listOfFiles) {
+            if (file.isFile()) {
+                ArrayList<Document> documents= WikipediaParser.parserV1(file.getPath());
+                for (Document doc : documents) {
+                    writer.addDocument(doc);
+                    count++;
+                    if (count % 10000 == 0) System.out.println(count + " documents added to index");
+                }
+            }
+        }
+
+        writer.close();
+
+    }
+
+    /**
+     * Builds an index for the wikipedia subset.
+     * Techniques: Stopwords. Porter Stemming.
+     * @param index_name
+     * @throws IOException
+     */
+    public static void buildIndexVersion2(String index_name) throws IOException {
+        int count = 0;
+        Directory dir = FSDirectory.open(new File("indicies/" + index_name).toPath());
+
+
+        Analyzer customAnalyzer = CustomAnalyzer.builder()
+            .withTokenizer("standard")
+            .addTokenFilter("lowercase")
+            .addTokenFilter("stop")
+            .addTokenFilter("porterstem")
+            .build();
+
+
+        IndexWriterConfig config = new IndexWriterConfig(customAnalyzer);
+        IndexWriter writer = new IndexWriter(dir, config);
+
+        //Run WikipediaParse on all files in dataset/wiki-subset-20140602
+        File folder = new File("dataset/wiki-subset-20140602");
+        File[] listOfFiles = folder.listFiles();
+        for (File file : listOfFiles) {
+            if (file.isFile()) {
+                ArrayList<Document> documents= WikipediaParser.parserV1(file.getPath());
+                for (Document doc : documents) {
+                    writer.addDocument(doc);
+                    count++;
+                    if (count % 10000 == 0) System.out.println(count + " documents added to index");
+                }
+            }
+        }
+
+        writer.close();
+
+    }
+
+    /**
+     * Builds an index for the wikipedia subset.
+     * Techniques: Stopwords. Porter Stemming.
+     * @param index_name
+     * @throws IOException
+     */
+    public static void buildIndexVersion3(String index_name) throws IOException {
+        int count = 0;
+        Directory dir = FSDirectory.open(new File("indicies/" + index_name).toPath());
+
+
+        Analyzer customAnalyzer = CustomAnalyzer.builder()
+            .withTokenizer("standard")
+            .addTokenFilter("lowercase")
+            .addTokenFilter("stop")
+            .build();
+
+
+        IndexWriterConfig config = new IndexWriterConfig(customAnalyzer);
         IndexWriter writer = new IndexWriter(dir, config);
 
         //Run WikipediaParse on all files in dataset/wiki-subset-20140602

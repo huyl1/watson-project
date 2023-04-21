@@ -47,7 +47,7 @@ public class WikipediaParser {
                 if (line.startsWith("[[") && line.endsWith("]]")) {
                     if (buffer != null) {
                         //clean the content
-                        content_buffer = basic_markup_remover(content_buffer);
+                        content_buffer = markUpRemover(content_buffer);
                         //make it ascii
                         content_buffer = Normalizer.normalize(content_buffer, Normalizer.Form.NFKD).replaceAll("[^\\p{ASCII}]", ""); 
                         buffer.add(new TextField("content", content_buffer, Field.Store.NO));
@@ -82,7 +82,7 @@ public class WikipediaParser {
         return articles;
     }
 
-    private static String basic_markup_remover(String content) {
+    private static String markUpRemover(String content) {
         //first make all whitespace characters into a single space
         content = content.replaceAll("\\s+", " ");
         //remove everything after "==See also=="
