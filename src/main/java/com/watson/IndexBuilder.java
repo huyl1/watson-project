@@ -13,25 +13,49 @@ import org.apache.lucene.store.FSDirectory;
 
 public class IndexBuilder {
     public static void main(String[] args) throws IOException {
-        buildIndexExample("index-example");
+        buildIndexVersion1("V1");
     }
 
     public static void buildIndexExample(String index_name) throws IOException {
-                // Create a new index in the directory. Make sure you create a new directory for each new index. 
-                // Make sure all indexes are in the same directory (indicies/)
-                Directory dir = FSDirectory.open(new File("indicies/" + index_name).toPath());
-                IndexWriterConfig config = new IndexWriterConfig(new StandardAnalyzer());
-                IndexWriter writer = new IndexWriter(dir, config);
-        
-                // Use wikipedia parser to parse the wikipedia dump to documents
-                ArrayList<Document> documents= WikipediaParser.parse("dataset/wiki-example.txt");
-        
-                //add each document to the index
+        // Create a new index in the directory. Make sure you create a new directory for each new index. 
+        // Make sure all indexes are in the same directory (indicies/)
+        Directory dir = FSDirectory.open(new File("indicies/" + index_name).toPath());
+        IndexWriterConfig config = new IndexWriterConfig(new StandardAnalyzer());
+        IndexWriter writer = new IndexWriter(dir, config);
+
+        // Use wikipedia parser to parse the wikipedia dump to documents
+        ArrayList<Document> documents= WikipediaParser.parse("dataset/wiki-example.txt");
+
+        //add each document to the index
+        for (Document doc : documents) {
+            writer.addDocument(doc);
+        }
+        //close index writer
+        writer.close();
+    }
+
+    public static void buildIndexVersion1(String index_name) throws IOException {
+        int count = 0;
+        Directory dir = FSDirectory.open(new File("indicies/" + index_name).toPath());
+        IndexWriterConfig config = new IndexWriterConfig(new StandardAnalyzer());
+        IndexWriter writer = new IndexWriter(dir, config);
+
+        //Run WikipediaParse on all files in dataset/wiki-subset-20140602
+        File folder = new File("dataset/wiki-subset-20140602");
+        File[] listOfFiles = folder.listFiles();
+        for (File file : listOfFiles) {
+            if (file.isFile()) {
+                ArrayList<Document> documents= WikipediaParser.parse(file.getPath());
                 for (Document doc : documents) {
                     writer.addDocument(doc);
+                    count++;
+                    if (count % 10000 == 0) System.out.println(count + " documents added to index");
                 }
-                //close index writer
-                writer.close();
+            }
+        }
+
+        writer.close();
+
     }
     
 }
