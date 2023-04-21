@@ -24,7 +24,7 @@ public class IndexBuilder {
         IndexWriter writer = new IndexWriter(dir, config);
 
         // Use wikipedia parser to parse the wikipedia dump to documents
-        ArrayList<Document> documents= WikipediaParser.parse("dataset/wiki-example.txt");
+        ArrayList<Document> documents= WikipediaParser.parserV1("dataset/wiki-example.txt");
 
         //add each document to the index
         for (Document doc : documents) {
@@ -34,6 +34,11 @@ public class IndexBuilder {
         writer.close();
     }
 
+    /**
+     * Builds an index for the wikipedia subset.
+     * @param index_name
+     * @throws IOException
+     */
     public static void buildIndexVersion1(String index_name) throws IOException {
         int count = 0;
         Directory dir = FSDirectory.open(new File("indicies/" + index_name).toPath());
@@ -45,7 +50,7 @@ public class IndexBuilder {
         File[] listOfFiles = folder.listFiles();
         for (File file : listOfFiles) {
             if (file.isFile()) {
-                ArrayList<Document> documents= WikipediaParser.parse(file.getPath());
+                ArrayList<Document> documents= WikipediaParser.parserV1(file.getPath());
                 for (Document doc : documents) {
                     writer.addDocument(doc);
                     count++;
