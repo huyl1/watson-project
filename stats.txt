@@ -1,0 +1,24 @@
+Using HP-ENVY x360 Convertible 15-bp1xx (2019)
+
+VERSION 1
+Building Index
+Time Took: 137.4 seconds
+Size: 231 MB (242,493,672 bytes)
+
+Using the Top 1 Method:
+16 Passed
+84 Failed
+Time Took: 128.9 seconds
+
+Using the Top 5 Method:
+30 Passed
+70 Failed
+Time Took: 519.1 seconds
+
+Build + Top 1 Method:
+Time Took: 289.5 seconds
+
+Build + Top 5 Method:
+Time Took: 753.8 seconds
+
+Precision at 1: 4/25 = 16%
