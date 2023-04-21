@@ -47,6 +47,7 @@
       <artifactId>lucene-analysis-opennlp</artifactId>
       <version>9.5.0</version>
     </dependency>
+
   </dependencies>
 
   <build>

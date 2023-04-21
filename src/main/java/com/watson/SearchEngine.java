@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.apache.lucene.analysis.custom.CustomAnalyzer;
+import org.apache.lucene.analysis.opennlp.OpenNLPLemmatizerFilterFactory;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
@@ -63,6 +64,38 @@ public class SearchEngine {
         .addTokenFilter("lowercase")
         .addTokenFilter("stop")
         .addTokenFilter("porterstem")
+        .build());
+
+        TopDocs results = searcher.search(parser.parse(query), n);
+        ArrayList<ScoreDoc> documents = new ArrayList<ScoreDoc>();
+        for (ScoreDoc scoreDoc : results.scoreDocs) {
+            documents.add(scoreDoc);
+        }
+        return documents;
+    }
+
+    public ArrayList<Document> searchV3(String query, int n) throws Exception {
+        QueryParser parser = new QueryParser("content", CustomAnalyzer.builder()
+        .withTokenizer("standard")
+        .addTokenFilter("lowercase")
+        .addTokenFilter("stop")
+        .addTokenFilter(OpenNLPLemmatizerFilterFactory.class, "dictionary", "en-lemmatizer.dict", "lemmatizerModel", "en-lemmatizer.bin")
+        .build());
+
+        TopDocs results = searcher.search(parser.parse(query), n);
+        ArrayList<Document> documents = new ArrayList<Document>();
+        for (ScoreDoc scoreDoc : results.scoreDocs) {
+            documents.add(searcher.doc(scoreDoc.doc));
+        }
+        return documents;
+    }
+
+    public ArrayList<ScoreDoc> searchV3Scores(String query, int n) throws Exception {
+        QueryParser parser = new QueryParser("content", CustomAnalyzer.builder()
+        .withTokenizer("standard")
+        .addTokenFilter("lowercase")
+        .addTokenFilter("stop")
+        .addTokenFilter(OpenNLPLemmatizerFilterFactory.class, "dictionary", "en-lemmatizer.dict", "lemmatizerModel", "en-lemmatizer.bin")
         .build());
 
         TopDocs results = searcher.search(parser.parse(query), n);

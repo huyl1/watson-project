@@ -6,6 +6,8 @@ import java.util.ArrayList;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.custom.CustomAnalyzer;
+import org.apache.lucene.analysis.en.EnglishAnalyzer;
+import org.apache.lucene.analysis.opennlp.OpenNLPLemmatizerFilterFactory;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
@@ -15,7 +17,7 @@ import org.apache.lucene.store.FSDirectory;
 
 public class IndexBuilder {
     public static void main(String[] args) throws IOException {
-        buildIndexVersion2("V2");
+        buildIndexExampleV3("index-exampleV3");
     }
 
     public static void buildIndexExample(String index_name) throws IOException {
@@ -23,6 +25,32 @@ public class IndexBuilder {
         // Make sure all indexes are in the same directory (indicies/)
         Directory dir = FSDirectory.open(new File("indicies/" + index_name).toPath());
         IndexWriterConfig config = new IndexWriterConfig(new StandardAnalyzer());
+        IndexWriter writer = new IndexWriter(dir, config);
+
+        // Use wikipedia parser to parse the wikipedia dump to documents
+        ArrayList<Document> documents= WikipediaParser.parserV1("dataset/wiki-example.txt");
+
+        //add each document to the index
+        for (Document doc : documents) {
+            writer.addDocument(doc);
+        }
+        //close index writer
+        writer.close();
+    }
+
+    public static void buildIndexExampleV3(String index_name) throws IOException {
+        // Create a new index in the directory. Make sure you create a new directory for each new index. 
+        // Make sure all indexes are in the same directory (indicies/)
+        Directory dir = FSDirectory.open(new File("indicies/" + index_name).toPath());
+        
+        Analyzer customAnalyzer = CustomAnalyzer.builder()
+            .withTokenizer("standard")
+            .addTokenFilter("lowercase")
+            .addTokenFilter("stop")
+            .addTokenFilter(OpenNLPLemmatizerFilterFactory.class, "dictionary", "en-lemmatizer.dict", "lemmatizerModel", "en-lemmatizer.bin")
+            .build();
+
+        IndexWriterConfig config = new IndexWriterConfig(customAnalyzer);
         IndexWriter writer = new IndexWriter(dir, config);
 
         // Use wikipedia parser to parse the wikipedia dump to documents
@@ -76,16 +104,7 @@ public class IndexBuilder {
         int count = 0;
         Directory dir = FSDirectory.open(new File("indicies/" + index_name).toPath());
 
-
-        Analyzer customAnalyzer = CustomAnalyzer.builder()
-            .withTokenizer("standard")
-            .addTokenFilter("lowercase")
-            .addTokenFilter("stop")
-            .addTokenFilter("porterstem")
-            .build();
-
-
-        IndexWriterConfig config = new IndexWriterConfig(customAnalyzer);
+        IndexWriterConfig config = new IndexWriterConfig(new EnglishAnalyzer());
         IndexWriter writer = new IndexWriter(dir, config);
 
         //Run WikipediaParse on all files in dataset/wiki-subset-20140602
@@ -108,7 +127,7 @@ public class IndexBuilder {
 
     /**
      * Builds an index for the wikipedia subset.
-     * Techniques: Stopwords. Porter Stemming.
+     * Techniques: Stopwords. Lemmatization.
      * @param index_name
      * @throws IOException
      */
@@ -121,6 +140,7 @@ public class IndexBuilder {
             .withTokenizer("standard")
             .addTokenFilter("lowercase")
             .addTokenFilter("stop")
+            .addTokenFilter(OpenNLPLemmatizerFilterFactory.class, "dictionary", "dataset/dictionary/en-lemmatizer.dict", "lemmatizerModel", "dataset/dictionary/en-lemmatizer.bin")
             .build();
 
 
@@ -144,5 +164,7 @@ public class IndexBuilder {
         writer.close();
 
     }
+
+    
     
 }

@@ -81,6 +81,7 @@ public class WikipediaParser {
 
         return articles;
     }
+    
 
     private static String markUpRemover(String content) {
         //first make all whitespace characters into a single space
