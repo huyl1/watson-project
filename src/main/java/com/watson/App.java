@@ -1,13 +1,15 @@
 package com.watson;
+import java.util.ArrayList;
+import org.apache.lucene.document.Document;
 
-/**
- * Hello world!
- *
- */
 public class App 
 {
-    public static void main( String[] args )
+    public static void main( String[] args ) throws Exception
     {
-        System.out.println( "Hello World!" );
+        SearchEngine engine = new SearchEngine("index-example");
+        ArrayList<Document> documents = engine.search("politician most often credited", 10);
+        for (Document doc : documents) {
+            System.out.println(doc.get("title"));
+        }
     }
 }
