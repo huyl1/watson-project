@@ -13,11 +13,12 @@ public class Version3Build {
     public void buildIndex() throws IOException {
         Path dir = Paths.get("indicies/V3");
         if (Files.exists(dir)) {
-            File f = new File("indicies/V3");
-            deleteDirectory(f);
-            f.delete();
+            // File f = new File("indicies/V3");
+            // deleteDirectory(f);
+            // f.delete();
+        } else {
+            IndexBuilder.buildIndexVersion3("V3");
         }
-        IndexBuilder.buildIndexVersion3("V3");
     }
 
     private void deleteDirectory(File f) {
