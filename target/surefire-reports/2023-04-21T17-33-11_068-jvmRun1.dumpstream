@@ -1,0 +1,25 @@
+# Created at 2023-04-21T17:33:31.654
+TestSet has not finished before stream error has appeared >> initializing exit by non-null configuration: DEFAULT
+java.io.EOFException
+	at java.base/java.io.DataInputStream.readInt(DataInputStream.java:396)
+	at org.apache.maven.surefire.booter.MasterProcessCommand.decode(MasterProcessCommand.java:115)
+	at org.apache.maven.surefire.booter.CommandReader$CommandRunnable.run(CommandReader.java:391)
+	at java.base/java.lang.Thread.run(Thread.java:832)
+
+
+# Created at 2023-04-21T17:33:35.198
+Unexpected IOException with stream: TEST CASE 8
+UCLA CELEBRITY ALUMNI
+Jackie Joyner-Kersee
+TOP 1
+
+
+
+# Created at 2023-04-21T17:33:41.943
+Unexpected IOException with stream: TEST CASE 10
+AFRICAN CITIES
+Cairo
+TOP 2
+
+
+
