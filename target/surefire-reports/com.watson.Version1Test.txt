@@ -1,0 +1,8 @@
+-------------------------------------------------------------------------------
+Test set: com.watson.Version1Test
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.181 s <<< FAILURE! - in com.watson.Version1Test
+testQuestions(com.watson.Version1Test)  Time elapsed: 0.116 s  <<< ERROR!
+org.apache.lucene.index.IndexNotFoundException: no segments* file found in MMapDirectory@C:\Users\rauld\OneDrive\Documents\Spring2023\CSC483\WatsonProject\indicies\V1 lockFactory=org.apache.lucene.store.NativeFSLockFactory@69a3d1d: files: [_0.cfe, _0.cfs, _0.si, _1.cfe, _1.cfs, _1.si, _2.fdm, _2.fdt, _2_Lucene90FieldsIndex-doc_ids_4.tmp, _2_Lucene90FieldsIndexfile_pointers_5.tmp, write.lock]
+	at com.watson.Version1Test.testQuestions(Version1Test.java:57)
+
