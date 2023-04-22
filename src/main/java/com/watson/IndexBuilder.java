@@ -140,7 +140,6 @@ public class IndexBuilder {
             .withTokenizer("standard")
             .addTokenFilter("lowercase")
             .addTokenFilter("stop")
-            .addTokenFilter(OpenNLPLemmatizerFilterFactory.class, "dictionary", "dataset/dictionary/en-lemmatizer.dict", "lemmatizerModel", "dataset/dictionary/en-lemmatizer.bin")
             .build();
 
 
