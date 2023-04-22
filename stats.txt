@@ -2,7 +2,7 @@ Using HP-ENVY x360 Convertible 15-bp1xx (2019)
 
 VERSION 1
 Building Index
-Time Took: 177.4 seconds
+Time Took: 160.9 seconds
 Size: 228 MB (239,924,031 bytes)
 
 Using the Top 1 Method:
@@ -40,18 +40,18 @@ MRR SCORE (TOP 5): 20.566666666666666
 
 VERSION 3
 Building Index
-Time Took: 171.0 seconds
-Size: 193 MB (203,367,775 bytes)
+Time Took: 7371.8 seconds
+Size: 189 MB (199,042,482 bytes)
 
 Using the Top 1 Method:
-14 Passed
-86 Failed
-Time Took: 90.2 seconds
+16 Passed
+84 Failed
+Time Took: 123.2 seconds
 
 Using the Top 5 Method:
-24 Passed
-76 Failed
-Time Took: 377.1 seconds
+30 Passed
+70 Failed
+Time Took: 530.6 seconds
 
 Precision at 1: 7/50 = 14%
-MRR SCORE (TOP 5): 17.95
+MRR SCORE (TOP 5): 20.866666666666667
