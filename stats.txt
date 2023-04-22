@@ -35,7 +35,7 @@ Using the Top 5 Method:
 Time Took: 333.4 seconds
 
 Precision at 1: 3/20 = 15%
-MRR SCORE (TOP 5): 20.566666666666666
+MRR SCORE (TOP 5): 20.566666666666666 
 
 
 VERSION 3
@@ -53,5 +53,5 @@ Using the Top 5 Method:
 70 Failed
 Time Took: 530.6 seconds
 
-Precision at 1: 7/50 = 14%
+Precision at 1: 4/25 = 16%
 MRR SCORE (TOP 5): 20.866666666666667
