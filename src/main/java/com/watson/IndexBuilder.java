@@ -236,6 +236,41 @@ public class IndexBuilder {
 
     }
 
+    public static void buildIndexVersion3_3(String index_name) throws IOException {
+        int count = 0;
+        Directory dir = FSDirectory.open(new File("indicies/" + index_name).toPath());
+
+
+        Analyzer customAnalyzer = CustomAnalyzer.builder()
+            .withTokenizer("standard")
+            .addTokenFilter("lowercase")
+            .addTokenFilter("stop")
+            .addTokenFilter("englishPossessive")
+            .addTokenFilter(OpenNLPLemmatizerFilterFactory.class, "dictionary", "en-lemmatizer.dict", "lemmatizerModel", "en-lemmatizer.bin")
+            .build();
+
+
+        IndexWriterConfig config = new IndexWriterConfig(customAnalyzer);
+        IndexWriter writer = new IndexWriter(dir, config);
+
+        //Run WikipediaParse on all files in dataset/wiki-subset-20140602
+        File folder = new File("dataset/wiki-subset-20140602");
+        File[] listOfFiles = folder.listFiles();
+        for (File file : listOfFiles) {
+            if (file.isFile()) {
+                ArrayList<Document> documents= WikipediaParser.parserV4(file.getPath());
+                for (Document doc : documents) {
+                    writer.addDocument(doc);
+                    count++;
+                    if (count % 10000 == 0) System.out.println(count + " documents added to index");
+                }
+            }
+        }
+
+        writer.close();
+
+    }
+
     
     
 }
