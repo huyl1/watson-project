@@ -9,9 +9,17 @@ import io.github.crew102.rapidrake.RakeAlgorithm;
 import io.github.crew102.rapidrake.data.SmartWords;
 import io.github.crew102.rapidrake.model.RakeParams;
 import io.github.crew102.rapidrake.model.Result;
+import opennlp.tools.namefind.NameFinderME;
+import opennlp.tools.namefind.TokenNameFinderModel;
+import opennlp.tools.tokenize.TokenizerME;
+import opennlp.tools.tokenize.TokenizerModel;
+import opennlp.tools.util.Span;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -132,8 +140,96 @@ public class SearchEngine {
         return keywordString;
     }
 
+    public String personNameExtract(String query) throws IOException {
+        //Loading the tokenizer model 
+        InputStream inputStreamTokenizer = new FileInputStream("NLPmodels/en-token.bin");
+        TokenizerModel tokenModel = new TokenizerModel(inputStreamTokenizer); 
+        //Instantiating the TokenizerME class 
+        TokenizerME tokenizer = new TokenizerME(tokenModel); 
+        //Tokenizing the sentence in to a string array 
+        String tokens[] = tokenizer.tokenize(query); 
+        //Loading the NER-person model 
+        InputStream inputStreamNameFinder = new FileInputStream("NLPmodels/en-ner-person.bin");       
+        TokenNameFinderModel model = new TokenNameFinderModel(inputStreamNameFinder);
+        //Instantiating the NameFinderME class 
+        NameFinderME nameFinder = new NameFinderME(model);       
+        //Finding the names in the sentence 
+        Span nameSpans[] = nameFinder.find(tokens);        
+        String retval = "";
+        //Printing the names and their spans in a sentence 
+        for(Span s: nameSpans)        
+            retval += tokens[s.getStart()] + " ";
+        return retval;
+    }
+
+    public String locationNameExtract(String query) throws IOException {
+        //Loading the tokenizer model 
+        InputStream inputStreamTokenizer = new FileInputStream("NLPmodels/en-token.bin");
+        TokenizerModel tokenModel = new TokenizerModel(inputStreamTokenizer); 
+        //Instantiating the TokenizerME class 
+        TokenizerME tokenizer = new TokenizerME(tokenModel); 
+        //Tokenizing the sentence in to a string array 
+        String tokens[] = tokenizer.tokenize(query); 
+        //Loading the NER-person model 
+        InputStream inputStreamNameFinder = new FileInputStream("NLPmodels/en-ner-location.bin");       
+        TokenNameFinderModel model = new TokenNameFinderModel(inputStreamNameFinder);
+        //Instantiating the NameFinderME class 
+        NameFinderME nameFinder = new NameFinderME(model);       
+        //Finding the names in the sentence 
+        Span nameSpans[] = nameFinder.find(tokens);        
+        String retval = "";
+        //Printing the names and their spans in a sentence 
+        for(Span s: nameSpans)        
+            retval += tokens[s.getStart()] + " ";
+        return retval;
+    }
+
+    public String organizationNameExtract(String query) throws IOException {
+        //Loading the tokenizer model 
+        InputStream inputStreamTokenizer = new FileInputStream("NLPmodels/en-token.bin");
+        TokenizerModel tokenModel = new TokenizerModel(inputStreamTokenizer); 
+        //Instantiating the TokenizerME class 
+        TokenizerME tokenizer = new TokenizerME(tokenModel); 
+        //Tokenizing the sentence in to a string array 
+        String tokens[] = tokenizer.tokenize(query); 
+        //Loading the NER-person model 
+        InputStream inputStreamNameFinder = new FileInputStream("NLPmodels/en-ner-organization.bin");       
+        TokenNameFinderModel model = new TokenNameFinderModel(inputStreamNameFinder);
+        //Instantiating the NameFinderME class 
+        NameFinderME nameFinder = new NameFinderME(model);       
+        //Finding the names in the sentence 
+        Span nameSpans[] = nameFinder.find(tokens);        
+        String retval = "";
+        //Printing the names and their spans in a sentence 
+        for(Span s: nameSpans)        
+            retval += tokens[s.getStart()] + " ";
+        return retval;
+    }
+
+    public String dateExtract(String query) throws IOException {
+        //Loading the tokenizer model 
+        InputStream inputStreamTokenizer = new FileInputStream("NLPmodels/en-token.bin");
+        TokenizerModel tokenModel = new TokenizerModel(inputStreamTokenizer); 
+        //Instantiating the TokenizerME class 
+        TokenizerME tokenizer = new TokenizerME(tokenModel); 
+        //Tokenizing the sentence in to a string array 
+        String tokens[] = tokenizer.tokenize(query); 
+        //Loading the NER-person model 
+        InputStream inputStreamNameFinder = new FileInputStream("NLPmodels/en-ner-date.bin");       
+        TokenNameFinderModel model = new TokenNameFinderModel(inputStreamNameFinder);
+        //Instantiating the NameFinderME class 
+        NameFinderME nameFinder = new NameFinderME(model);       
+        //Finding the names in the sentence 
+        Span nameSpans[] = nameFinder.find(tokens);        
+        String retval = "";
+        //Printing the names and their spans in a sentence 
+        for(Span s: nameSpans)        
+            retval += tokens[s.getStart()] + " ";
+        return retval;
+    }
+
     public String queryBuilderV1(String query, String topic) throws IOException {
-        return query + " " + topic + " ";
+        return query + " " + topic;
     }
 
     public String queryBuilderV2(String query, String topic) throws IOException {
@@ -141,6 +237,6 @@ public class SearchEngine {
     }
 
     public String queryBuilderV3(String query, String topic) throws IOException {
-        return topic + " " + keywordExtract(query);
+        return query + " "  + topic + keywordExtract(query) + personNameExtract(query) + locationNameExtract(query) + organizationNameExtract(query) + dateExtract(query);
     }
 }

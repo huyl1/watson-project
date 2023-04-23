@@ -6,11 +6,12 @@ public class App
 {
     public static void main( String[] args ) throws Exception
     {
-        String test_String = "This clear Greek liqueur is quite potent, so it's usually mixed with water, which turns it white & cloudy GREEK FOOD & DRINK";
-        SearchEngine engine = new SearchEngine("V1_1");
-        String keywords = engine.keywordExtract(test_String);
-        ArrayList<Document> documents = engine.searchV1(test_String, 20);
-        System.out.println("Search results for: " + keywords);
+        String test_String = "Because it's cured & stored in brine, this crumbly white cheese made from sheep's milk is often referred to as pickled cheese";
+        String test_Topic = "GREEK FOOD & DRINK";
+        SearchEngine engine = new SearchEngine("V2_3");
+        String query = engine.queryBuilderV2(test_String, test_Topic);
+        ArrayList<Document> documents = engine.searchV2(query, 5);
+        System.out.println("Search results for: " + query);
         for (Document doc : documents) {
             System.out.println(doc.get("title"));
         }
