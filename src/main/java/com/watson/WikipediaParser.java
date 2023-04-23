@@ -15,7 +15,7 @@ import org.apache.lucene.document.TextField;
 /*  Convert articles in Wikipedia files to Lucene documents. Document is the intermediate object. */
 public class WikipediaParser {
     public static void main(String[] args) {
-        ArrayList<Document> articles = parse("dataset/wiki-example.txt");
+        ArrayList<Document> articles = parserV1("dataset/wiki-example.txt");
         //print first 3 articles
         for (int i = 0; i < 3; i++) {
             System.out.println(articles.get(i).get("title"));
@@ -29,7 +29,7 @@ public class WikipediaParser {
      * square brackets. For example, BBC’s page starts with “[[BBC]]”
      * @param file_name
      */
-    public static ArrayList<Document> parse(String file_name) {
+    public static ArrayList<Document> parserV1(String file_name) {
         ArrayList<Document> articles = new ArrayList<>();
         //open file_name
         //read line by line
@@ -47,7 +47,7 @@ public class WikipediaParser {
                 if (line.startsWith("[[") && line.endsWith("]]")) {
                     if (buffer != null) {
                         //clean the content
-                        content_buffer = content_cleaner(content_buffer);
+                        content_buffer = markUpRemover(content_buffer);
                         //make it ascii
                         content_buffer = Normalizer.normalize(content_buffer, Normalizer.Form.NFKD).replaceAll("[^\\p{ASCII}]", ""); 
                         buffer.add(new TextField("content", content_buffer, Field.Store.NO));
@@ -81,8 +81,9 @@ public class WikipediaParser {
 
         return articles;
     }
+    
 
-    private static String content_cleaner(String content) {
+    private static String markUpRemover(String content) {
         //first make all whitespace characters into a single space
         content = content.replaceAll("\\s+", " ");
         //remove everything after "==See also=="
