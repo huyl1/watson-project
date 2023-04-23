@@ -5,6 +5,11 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.FSDirectory;
 
+import io.github.crew102.rapidrake.RakeAlgorithm;
+import io.github.crew102.rapidrake.data.SmartWords;
+import io.github.crew102.rapidrake.model.RakeParams;
+import io.github.crew102.rapidrake.model.Result;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -100,5 +105,42 @@ public class SearchEngine {
             documents.add(scoreDoc);
         }
         return documents;
+    }
+
+    public String keywordExtract(String query) throws IOException {
+        // Create an object to hold algorithm parameters
+        String[] stopWords = new SmartWords().getSmartWords(); 
+        String[] stopPOS = {"VB", "VBD", "VBG", "VBN", "VBP", "VBZ"}; 
+        int minWordChar = 1;
+        boolean shouldStem = true;
+        String phraseDelims = "[-,.?():;\"!/]"; 
+        RakeParams params = new RakeParams(stopWords, stopPOS, minWordChar, shouldStem, phraseDelims);
+        
+        // Create a RakeAlgorithm object
+        String POStaggerURL = "NLPmodels/en-pos-maxent.bin"; // The path to your POS tagging model
+        String SentDetecURL = "NLPmodels/en-sent.bin"; // The path to your sentence detection model
+        RakeAlgorithm rakeAlg = new RakeAlgorithm(params, POStaggerURL, SentDetecURL);
+        
+        // Call the rake method
+        Result result = rakeAlg.rake(query);
+        String[] keywords = result.getFullKeywords();
+
+        String keywordString = "";
+        for (String keyword : keywords) {
+            keywordString += keyword + " ";
+        }
+        return keywordString;
+    }
+
+    public String queryBuilderV1(String query, String topic) throws IOException {
+        return query + " " + topic + " ";
+    }
+
+    public String queryBuilderV2(String query, String topic) throws IOException {
+        return query + " " + topic + " " + keywordExtract(query);
+    }
+
+    public String queryBuilderV3(String query, String topic) throws IOException {
+        return topic + " " + keywordExtract(query);
     }
 }

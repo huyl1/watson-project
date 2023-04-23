@@ -15,12 +15,11 @@ import org.apache.lucene.document.TextField;
 /*  Convert articles in Wikipedia files to Lucene documents. Document is the intermediate object. */
 public class WikipediaParser {
     public static void main(String[] args) {
-        ArrayList<Document> articles = parserV1("dataset/wiki-example.txt");
-        //print first 3 articles
-        for (int i = 0; i < 3; i++) {
-            System.out.println(articles.get(i).get("title"));
-            System.out.println(articles.get(i).get("content"));
-        }
+        ArrayList<Document> articles = parserV2("dataset/wiki-example.txt");
+        //print the 3rd article
+        System.out.println(articles.get(2).get("title"));
+        System.out.println(articles.get(2).get("content"));
+
     }
 
     /**
@@ -81,8 +80,148 @@ public class WikipediaParser {
 
         return articles;
     }
-    
 
+    public static ArrayList<Document> parserV2(String file_name) {
+        ArrayList<Document> articles = new ArrayList<>();
+        //open file_name
+        //read line by line
+        try {
+            File file = new File(file_name);
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String line;
+            Document buffer = null;
+            String content_buffer = null;
+
+            while ((line = br.readLine()) != null) {
+                //if line starts with [[ and end with ]], then it is a title
+                //create a new Document object
+                //containing the title, and the content until the next title
+                if (line.startsWith("[[") && line.endsWith("]]")) {
+                    if (buffer != null) {
+                        //clean the content
+                        content_buffer = customRemover(content_buffer);
+                        //make it ascii
+                        content_buffer = Normalizer.normalize(content_buffer, Normalizer.Form.NFKD).replaceAll("[^\\p{ASCII}]", ""); 
+                        buffer.add(new TextField("content", content_buffer, Field.Store.NO));
+                        articles.add(buffer);
+                    }
+                    buffer = new Document();
+                    //title the document with the title
+                    //initialize a buffer for the document
+                    buffer.add(new StringField("title", line.substring(2, line.length() - 2), Field.Store.YES));
+                    content_buffer = "";
+                } else {
+                    //if line does not start with [[ and end with ]], then it is a content
+                    //ignore lines that starts with ==
+                    if (!line.startsWith("CATEGORIES:") && !line.startsWith("==")) {
+                        content_buffer += line + " ";
+                    }
+                }
+
+            }
+            br.close();
+            
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+
+        return articles;
+    }
+
+    public static ArrayList<Document> parserV3(String file_name) {
+        ArrayList<Document> articles = new ArrayList<>();
+        //open file_name
+        //read line by line
+        try {
+            File file = new File(file_name);
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String line;
+            Document buffer = null;
+            String content_buffer = null;
+
+            while ((line = br.readLine()) != null) {
+                //if line starts with [[ and end with ]], then it is a title
+                //create a new Document object
+                //containing the title, and the content until the next title
+                if (line.startsWith("[[") && line.endsWith("]]")) {
+                    if (buffer != null) {
+                        //clean the content
+                        content_buffer = markUpRemover(content_buffer);
+                        //make it ascii
+                        content_buffer = Normalizer.normalize(content_buffer, Normalizer.Form.NFKD).replaceAll("[^\\p{ASCII}]", ""); 
+                        buffer.add(new TextField("content", content_buffer, Field.Store.NO));
+                        articles.add(buffer);
+                    }
+                    buffer = new Document();
+                    //title the document with the title
+                    //initialize a buffer for the document
+                    buffer.add(new StringField("title", line.substring(2, line.length() - 2), Field.Store.YES));
+                    content_buffer = "";
+                } else {
+                    //if line does not start with [[ and end with ]], then it is a content
+                    //ignore lines that starts with ==
+                    if (!line.startsWith("==")) {
+                        content_buffer += line + " ";
+                    }
+                }
+
+            }
+            br.close();
+            
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+
+        return articles;
+    }
+
+    public static ArrayList<Document> parserV4(String file_name) {
+        ArrayList<Document> articles = new ArrayList<>();
+        //open file_name
+        //read line by line
+        try {
+            File file = new File(file_name);
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String line;
+            Document buffer = null;
+            String content_buffer = null;
+
+            while ((line = br.readLine()) != null) {
+                //if line starts with [[ and end with ]], then it is a title
+                //create a new Document object
+                //containing the title, and the content until the next title
+                if (line.startsWith("[[") && line.endsWith("]]")) {
+                    if (buffer != null) {
+                        //clean the content
+                        content_buffer = customRemover(content_buffer);
+                        //make it ascii
+                        content_buffer = Normalizer.normalize(content_buffer, Normalizer.Form.NFKD).replaceAll("[^\\p{ASCII}]", ""); 
+                        buffer.add(new TextField("content", content_buffer, Field.Store.NO));
+                        articles.add(buffer);
+                    }
+                    buffer = new Document();
+                    //title the document with the title
+                    //initialize a buffer for the document
+                    buffer.add(new StringField("title", line.substring(2, line.length() - 2), Field.Store.YES));
+                    content_buffer = "";
+                } else {
+                    //if line does not start with [[ and end with ]], then it is a content
+                    //ignore lines that starts with ==
+                    if (!line.startsWith("==")) {
+                        content_buffer += line + " ";
+                    }
+                }
+
+            }
+            br.close();
+            
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+
+        return articles;
+    }
+    
     private static String markUpRemover(String content) {
         //first make all whitespace characters into a single space
         content = content.replaceAll("\\s+", " ");
@@ -96,6 +235,19 @@ public class WikipediaParser {
         content = content.replaceAll("\\[tpl\\].*?\\[/tpl\\]", "");
         //remove all tokens starting with a pipe
         content = content.replaceAll("\\|.*?\\]", "]");
+
+        return content;
+    }
+    
+    private static String customRemover(String content) {
+        //first make all whitespace characters into a single space
+        content = content.replaceAll("\\s+", " ");
+        //remove tags like |name=
+        content = content.replaceAll("\\|.*?=", " ");
+        //remove square tags eg [tpl]
+        content = content.replaceAll("\\[.*?\\]", " ");
+        //remove all web links
+        content = content.replaceAll("http.*?\\s", " ");
 
         return content;
     }

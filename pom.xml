@@ -47,7 +47,21 @@
       <artifactId>lucene-analysis-opennlp</artifactId>
       <version>9.5.0</version>
     </dependency>
-
+    <dependency>
+      <groupId>io.github.crew102</groupId>
+      <artifactId>rapidrake</artifactId>
+      <version>0.1.4</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <groupId>org.apache.maven.plugins</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>opennlp-tools</artifactId>
+          <groupId>org.apache.opennlp</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
   </dependencies>
 
   <build>

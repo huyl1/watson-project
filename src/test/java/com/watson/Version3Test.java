@@ -50,7 +50,8 @@ public class Version3Test
                 boolean flag = false;
                 SearchEngine engine = new SearchEngine(version);
                 try {
-                    ArrayList<Document> documents = engine.searchV3(query, cap);
+                    String queryString = engine.queryBuilderV3(query, topic);
+                    ArrayList<Document> documents = engine.searchV3(queryString, cap);
                     for (Document doc : documents) {
                         // In the case that there are multiple answers
                         if (answer.contains("|")) {
