@@ -21,6 +21,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.custom.CustomAnalyzer;
@@ -228,6 +229,18 @@ public class SearchEngine {
         return retval;
     }
 
+    public String synonymExpansion(String query) throws IOException {
+        InputStream inputStreamTokenizer = new FileInputStream("NLPmodels/en-token.bin");
+        TokenizerModel tokenModel = new TokenizerModel(inputStreamTokenizer); 
+        //Instantiating the TokenizerME class 
+        TokenizerME tokenizer = new TokenizerME(tokenModel); 
+        //Tokenizing the sentence in to a string array 
+        String tokens[] = tokenizer.tokenize(query); 
+        System.out.println("Tokens: " + Arrays.toString(tokens));
+        
+        return "";
+    }
+
     public String queryBuilderV1(String query, String topic) throws IOException {
         return query + " " + topic;
     }
@@ -237,6 +250,6 @@ public class SearchEngine {
     }
 
     public String queryBuilderV3(String query, String topic) throws IOException {
-        return query + " "  + topic + keywordExtract(query) + personNameExtract(query) + locationNameExtract(query) + organizationNameExtract(query) + dateExtract(query);
+        return query + " " + topic + "United States";
     }
 }
