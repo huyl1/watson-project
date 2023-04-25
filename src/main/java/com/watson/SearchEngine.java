@@ -239,8 +239,6 @@ public class SearchEngine {
     }
 
     public String synonymExpansion(String query) throws IOException, JWNLException {
-        // Change how much synonyms to attach to EACH word
-        int cap = 1;
         String retVal = "";
         String[] words = query.split(" ");
                 
@@ -252,6 +250,8 @@ public class SearchEngine {
             temp2 = temp.getIndexWordArray();
 
             for (int j = 0; j < 1; j++) {
+                // How many synonyms we want to return
+                int cap = 1;
                 try{IndexWord found = synonymExpansionHelper(temp2[j], words[i]);
                 PointerTargetNodeList hypernyms = PointerUtils.getDirectHypernyms(found.getSenses().get(0));
                 String str = hypernyms.toString();
