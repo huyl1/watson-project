@@ -133,6 +133,7 @@ public class SearchEngine {
 
     public ArrayList<Document> searchV2_2(String query, int n) throws Exception {
         //if query string contains the word "capital"
+        int oldN = n;
         if (n < 5) {
             n = 5;}
         QueryParser parser = new QueryParser("content", analyzerV2);
@@ -150,7 +151,7 @@ public class SearchEngine {
         for (ScoreDoc scoreDoc : results.scoreDocs) {
             documents.add(searcher.doc(scoreDoc.doc));
             count++;
-            if (count == n) {
+            if (count == oldN) {
                 break;
             }
         }
