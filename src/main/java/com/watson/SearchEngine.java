@@ -131,7 +131,7 @@ public class SearchEngine {
         return documents;
     }
 
-    public ArrayList<Document> searchV2_2(String query, int n) throws Exception {
+    public ArrayList<Document> searchV2_1(String query, int n) throws Exception {
         //if query string contains the word "capital"
         int oldN = n;
         if (n < 5) {
@@ -143,7 +143,7 @@ public class SearchEngine {
         if (query.toLowerCase().contains("capital")) {
             //get all capitals from capitalCities.txt as a string
             String capitalCities = new String(Files.readAllBytes(Paths.get("dataset/capitalCities.txt")));
-            //0.22 weight is a magic number. Best number that works for the dataset. Overfitting.
+            //0.22 weight is a magic number. Best number that works for the dataset. Overfitting?
             results = QueryRescorer.rescore(searcher, results, parser.parse(capitalCities), 0.22, n);
         }
 

@@ -12,7 +12,7 @@ public class App
         String test_Topic = "AFRICAN CITIES";
         SearchEngine engine = new SearchEngine("V2_3");
         String query = engine.queryBuilderV3(test_String, test_Topic);
-        ArrayList<Document> documents = engine.searchV2_2(query, 3);
+        ArrayList<Document> documents = engine.searchV2_1(query, 3);
         System.out.println("Search results for: " + query);
         for (Document doc : documents) {
             System.out.println(doc.get("title"));
