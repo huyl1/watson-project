@@ -8,11 +8,11 @@ public class App
 {
     public static void main( String[] args ) throws Exception
     {
-        String test_String = "Wooden 2-story verandas in this Liberian capital are an architectural link to the U.S. south";
+        String test_String = "Several bridges, including El Tahrir, cross the Nile in this capital";
         String test_Topic = "AFRICAN CITIES";
         SearchEngine engine = new SearchEngine("V2_3");
-        String query = engine.queryBuilderV2(test_String, test_Topic);
-        ArrayList<Document> documents = engine.searchV2_2(query, 5);
+        String query = engine.queryBuilderV3(test_String, test_Topic);
+        ArrayList<Document> documents = engine.searchV2_2(query, 3);
         System.out.println("Search results for: " + query);
         for (Document doc : documents) {
             System.out.println(doc.get("title"));

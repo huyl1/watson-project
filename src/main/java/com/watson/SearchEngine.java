@@ -140,14 +140,14 @@ public class SearchEngine {
         TopDocs results = searcher.search(parser.parse(query), n);
         ArrayList<Document> documents = new ArrayList<Document>();
 
-        int docrscored = 2;
         if (query.toLowerCase().contains("capital")) {
             //get all capitals from capitalCities.txt as a string
             String capitalCities = new String(Files.readAllBytes(Paths.get("dataset/capitalCities.txt")));
-            results = QueryRescorer.rescore(searcher, results, parser.parse(capitalCities), 3, docrscored);
+            //0.22 weight is a magic number. Best number that works for the dataset. Overfitting.
+            results = QueryRescorer.rescore(searcher, results, parser.parse(capitalCities), 0.22, n);
         }
 
-        int count = 1;
+        int count = 0;
         for (ScoreDoc scoreDoc : results.scoreDocs) {
             documents.add(searcher.doc(scoreDoc.doc));
             count++;
@@ -274,7 +274,7 @@ public class SearchEngine {
         return retval;
     }
 
-    public String synonymExpansion(String query) throws IOException, JWNLException {
+    public String synonymExpansion(String query, int cap) throws IOException, JWNLException {
         String retVal = "";
         String[] words = query.split(" ");
                 
@@ -287,7 +287,6 @@ public class SearchEngine {
 
             for (int j = 0; j < 1; j++) {
                 // How many synonyms we want to return
-                int cap = 1;
                 try{IndexWord found = synonymExpansionHelper(temp2[j], words[i]);
                 PointerTargetNodeList hypernyms = PointerUtils.getDirectHypernyms(found.getSenses().get(0));
                 String str = hypernyms.toString();
@@ -320,15 +319,16 @@ public class SearchEngine {
         return query + " " + topic + " " + keywordExtract(query);
     }
 
-    public String queryBuilderV3(String query, String topic) throws IOException {
-        return query + " " + topic + "United States";
+    public String queryBuilderV3(String query, String topic) throws IOException, JWNLException {
+        String location = locationNameExtract(query);
+        return query + " " + topic + " " + keywordExtract(query) + synonymExpansion(location, 3);
     }
 
     public String queryBuilderV4(String query, String topic) throws IOException, JWNLException {
-        return topic + " " + query + " " + synonymExpansion(query);
+        return topic + " " + query + " " + synonymExpansion(query, 1);
     }
 
     public String queryBuilderV5(String query, String topic) throws IOException, JWNLException {
-        return topic + " " + query + " " + synonymExpansion(keywordExtract(query));
+        return topic + " " + query + " " + synonymExpansion(keywordExtract(query), 1);
     }
 }
