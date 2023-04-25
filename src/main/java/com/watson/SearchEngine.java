@@ -9,6 +9,12 @@ import io.github.crew102.rapidrake.RakeAlgorithm;
 import io.github.crew102.rapidrake.data.SmartWords;
 import io.github.crew102.rapidrake.model.RakeParams;
 import io.github.crew102.rapidrake.model.Result;
+import net.sf.extjwnl.JWNLException;
+import net.sf.extjwnl.data.IndexWord;
+import net.sf.extjwnl.data.IndexWordSet;
+import net.sf.extjwnl.data.list.PointerTargetNodeList;
+import net.sf.extjwnl.data.PointerUtils;
+import net.sf.extjwnl.dictionary.Dictionary;
 import opennlp.tools.namefind.NameFinderME;
 import opennlp.tools.namefind.TokenNameFinderModel;
 import opennlp.tools.tokenize.TokenizerME;
@@ -37,7 +43,8 @@ public class SearchEngine {
     private Analyzer analyzerV1;
     private Analyzer analyzerV2;
     private Analyzer analyzerV3;
-    public SearchEngine(String index_name) throws IOException {
+    private Dictionary dict;
+    public SearchEngine(String index_name) throws IOException, JWNLException {
         searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File("indicies/" + index_name).toPath())));
 
         analyzerV1 = new StandardAnalyzer();
@@ -49,6 +56,8 @@ public class SearchEngine {
             .addTokenFilter("englishPossessive")
             .addTokenFilter(OpenNLPLemmatizerFilterFactory.class, "dictionary", "en-lemmatizer.dict", "lemmatizerModel", "en-lemmatizer.bin")
             .build();
+
+        dict = Dictionary.getDefaultResourceInstance();
         
         }
 
@@ -229,16 +238,42 @@ public class SearchEngine {
         return retval;
     }
 
-    public String synonymExpansion(String query) throws IOException {
-        InputStream inputStreamTokenizer = new FileInputStream("NLPmodels/en-token.bin");
-        TokenizerModel tokenModel = new TokenizerModel(inputStreamTokenizer); 
-        //Instantiating the TokenizerME class 
-        TokenizerME tokenizer = new TokenizerME(tokenModel); 
-        //Tokenizing the sentence in to a string array 
-        String tokens[] = tokenizer.tokenize(query); 
-        System.out.println("Tokens: " + Arrays.toString(tokens));
+    public String synonymExpansion(String query) throws IOException, JWNLException {
+        String retVal = "";
+        String[] words = query.split(" ");
+                
+        for (int i = 0; i < words.length; i++) {
+            IndexWordSet temp = null;
+            IndexWord[] temp2 = null;
+
+            temp = dict.lookupAllIndexWords(words[i]); 
+            temp2 = temp.getIndexWordArray();
+
+            for (int j = 0; j < 1; j++) {
+                // How many synonyms we want to return
+                int cap = 1;
+                try{IndexWord found = synonymExpansionHelper(temp2[j], words[i]);
+                PointerTargetNodeList hypernyms = PointerUtils.getDirectHypernyms(found.getSenses().get(0));
+                String str = hypernyms.toString();
+                String substring = str.substring(str.indexOf("Words: ") + 7, str.indexOf(" --"));
+                String[] synonymWords = substring.split(", ");
+
+                // In case the cap is too high for the amount of synonyms there are
+                if (synonymWords.length < cap) {cap = synonymWords.length;}
+
+                // Iterate through the list of synonyms
+                for (int k = 0; k < cap; k++) {
+                    retVal += synonymWords[k] + " ";
+                }
+                } catch(Exception e) {}
+            }
+        }
         
-        return "";
+        return retVal;
+    }
+
+    public IndexWord synonymExpansionHelper(IndexWord indexWord, String word) throws JWNLException {
+        return dict.lookupIndexWord(indexWord.getPOS(), word);
     }
 
     public String queryBuilderV1(String query, String topic) throws IOException {
@@ -251,5 +286,13 @@ public class SearchEngine {
 
     public String queryBuilderV3(String query, String topic) throws IOException {
         return query + " " + topic + "United States";
+    }
+
+    public String queryBuilderV4(String query, String topic) throws IOException, JWNLException {
+        return topic + " " + query + " " + synonymExpansion(query);
+    }
+
+    public String queryBuilderV5(String query, String topic) throws IOException, JWNLException {
+        return topic + " " + query + " " + synonymExpansion(keywordExtract(query));
     }
 }
