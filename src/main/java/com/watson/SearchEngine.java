@@ -1,8 +1,10 @@
 package com.watson;
 
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.QueryRescorer;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.FSDirectory;
 
 import io.github.crew102.rapidrake.RakeAlgorithm;
@@ -26,6 +28,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -36,6 +40,8 @@ import org.apache.lucene.analysis.opennlp.OpenNLPLemmatizerFilterFactory;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.queryparser.classic.QueryParser;
 
 public class SearchEngine {
@@ -124,6 +130,35 @@ public class SearchEngine {
         }
         return documents;
     }
+
+    public ArrayList<Document> searchV2_2(String query, int n) throws Exception {
+        //if query string contains the word "capital"
+        if (n < 5) {
+            n = 5;}
+        QueryParser parser = new QueryParser("content", analyzerV2);
+        TopDocs results = searcher.search(parser.parse(query), n);
+        ArrayList<Document> documents = new ArrayList<Document>();
+
+        int docrscored = 2;
+        if (query.toLowerCase().contains("capital")) {
+            //get all capitals from capitalCities.txt as a string
+            String capitalCities = new String(Files.readAllBytes(Paths.get("dataset/capitalCities.txt")));
+            results = QueryRescorer.rescore(searcher, results, parser.parse(capitalCities), 3, docrscored);
+        }
+
+        int count = 1;
+        for (ScoreDoc scoreDoc : results.scoreDocs) {
+            documents.add(searcher.doc(scoreDoc.doc));
+            count++;
+            if (count == n) {
+                break;
+            }
+        }
+
+        return documents;
+    }
+
+
 
     public String keywordExtract(String query) throws IOException {
         // Create an object to hold algorithm parameters
