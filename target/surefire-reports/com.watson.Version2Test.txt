@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.watson.Version2Test
--------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 71.357 s - in com.watson.Version2Test

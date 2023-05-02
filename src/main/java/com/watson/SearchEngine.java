@@ -162,9 +162,6 @@ public class SearchEngine {
         if (n < 5) {
             n = 5;}
 
-        LMDirichletSimilarity classic = new LMDirichletSimilarity();
-        searcher.setSimilarity(classic);
-
         QueryParser parser = new QueryParser("content", analyzerV2);
         TopDocs results = searcher.search(parser.parse(query), n);
         ArrayList<Document> documents = new ArrayList<Document>();
@@ -194,16 +191,21 @@ public class SearchEngine {
         int oldN = n;
         if (n < 5) {
             n = 5;}
+
+        LMDirichletSimilarity classic = new LMDirichletSimilarity();
+        searcher.setSimilarity(classic);
+
         QueryParser parser = new QueryParser("content", analyzerV2);
         TopDocs results = searcher.search(parser.parse(query), n);
         ArrayList<Document> documents = new ArrayList<Document>();
+        
 
-        // if (query.toLowerCase().contains("capital")) {
-        //     //get all capitals from capitalCities.txt as a string
-        //     String capitalCities = new String(Files.readAllBytes(Paths.get("dataset/capitalCities.txt")));
-        //     //0.22 weight is a magic number. Best number that works for the dataset. Overfitting?
-        //     results = QueryRescorer.rescore(searcher, results, parser.parse(capitalCities), 0.22, n);
-        // }
+        if (query.toLowerCase().contains("capital")) {
+            //get all capitals from capitalCities.txt as a string
+            String capitalCities = new String(Files.readAllBytes(Paths.get("dataset/capitalCities.txt")));
+            //0.22 weight is a magic number. Best number that works for the dataset. Overfitting?
+            results = QueryRescorer.rescore(searcher, results, parser.parse(capitalCities), 0.22, n);
+        }
 
         int count = 0;
         for (ScoreDoc scoreDoc : results.scoreDocs) {
