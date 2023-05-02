@@ -4,8 +4,14 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.QueryRescorer;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.similarities.ClassicSimilarity;
+import org.apache.lucene.search.similarities.LMDirichletSimilarity;
+import org.apache.lucene.search.similarities.TFIDFSimilarity;
 import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.FSDirectory;
+import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
+import org.deeplearning4j.models.word2vec.Word2Vec;
+import org.nd4j.linalg.api.ops.impl.reduce3.CosineSimilarity;
 
 import io.github.crew102.rapidrake.RakeAlgorithm;
 import io.github.crew102.rapidrake.data.SmartWords;
@@ -32,16 +38,20 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.custom.CustomAnalyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.opennlp.OpenNLPLemmatizerFilterFactory;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 
 public class SearchEngine {
@@ -64,8 +74,20 @@ public class SearchEngine {
             .build();
 
         dict = Dictionary.getDefaultResourceInstance();
-        
         }
+
+    public ArrayList<Document> searchV1_1(String query, int n) throws Exception {
+        LMDirichletSimilarity lmd = new LMDirichletSimilarity();
+        searcher.setSimilarity(lmd);
+
+        QueryParser parser = new QueryParser("content", analyzerV1);
+        TopDocs results = searcher.search(parser.parse(query), n);
+        ArrayList<Document> documents = new ArrayList<Document>();
+        for (ScoreDoc scoreDoc : results.scoreDocs) {
+            documents.add(searcher.doc(scoreDoc.doc));
+        }
+        return documents;
+    }
 
     public ArrayList<Document> searchV1(String query, int n) throws Exception {
         QueryParser parser = new QueryParser("content", analyzerV1);
@@ -88,8 +110,11 @@ public class SearchEngine {
     }
 
     public ArrayList<Document> searchV2(String query, int n) throws Exception {
-        QueryParser parser = new QueryParser("content", analyzerV2);
+        // Can comment this out if needed
+        LMDirichletSimilarity lmd = new LMDirichletSimilarity();
+        searcher.setSimilarity(lmd);
 
+        QueryParser parser = new QueryParser("content", analyzerV2);
         TopDocs results = searcher.search(parser.parse(query), n);
         ArrayList<Document> documents = new ArrayList<Document>();
         for (ScoreDoc scoreDoc : results.scoreDocs) {
@@ -136,9 +161,14 @@ public class SearchEngine {
         int oldN = n;
         if (n < 5) {
             n = 5;}
+
+        LMDirichletSimilarity classic = new LMDirichletSimilarity();
+        searcher.setSimilarity(classic);
+
         QueryParser parser = new QueryParser("content", analyzerV2);
         TopDocs results = searcher.search(parser.parse(query), n);
         ArrayList<Document> documents = new ArrayList<Document>();
+        
 
         if (query.toLowerCase().contains("capital")) {
             //get all capitals from capitalCities.txt as a string
@@ -159,7 +189,33 @@ public class SearchEngine {
         return documents;
     }
 
+    public ArrayList<Document> searchV2_2(String query, int n) throws Exception {
+        //if query string contains the word "capital"
+        int oldN = n;
+        if (n < 5) {
+            n = 5;}
+        QueryParser parser = new QueryParser("content", analyzerV2);
+        TopDocs results = searcher.search(parser.parse(query), n);
+        ArrayList<Document> documents = new ArrayList<Document>();
 
+        // if (query.toLowerCase().contains("capital")) {
+        //     //get all capitals from capitalCities.txt as a string
+        //     String capitalCities = new String(Files.readAllBytes(Paths.get("dataset/capitalCities.txt")));
+        //     //0.22 weight is a magic number. Best number that works for the dataset. Overfitting?
+        //     results = QueryRescorer.rescore(searcher, results, parser.parse(capitalCities), 0.22, n);
+        // }
+
+        int count = 0;
+        for (ScoreDoc scoreDoc : results.scoreDocs) {
+            documents.add(searcher.doc(scoreDoc.doc));
+            count++;
+            if (count == oldN) {
+                break;
+            }
+        }
+
+        return documents;
+    }
 
     public String keywordExtract(String query) throws IOException {
         // Create an object to hold algorithm parameters
@@ -307,6 +363,19 @@ public class SearchEngine {
         return retVal;
     }
 
+    public String modelExpansion(String query, int n) throws FileNotFoundException {
+        String retVal = "";
+        Word2Vec vec = WordVectorSerializer.readWord2VecModel("pathToSaveModel.txt");
+        String[] words = query.split(" " );
+        for (int i = 0; i < words.length; i++) {
+            Collection<String> nst = vec.wordsNearest(words[i], n);
+            for (String word : nst) {
+                retVal += word + " ";
+            }
+        }
+        return retVal;
+    }
+
     public IndexWord synonymExpansionHelper(IndexWord indexWord, String word) throws JWNLException {
         return dict.lookupIndexWord(indexWord.getPOS(), word);
     }
@@ -330,5 +399,9 @@ public class SearchEngine {
 
     public String queryBuilderV5(String query, String topic) throws IOException, JWNLException {
         return topic + " " + query + " " + synonymExpansion(keywordExtract(query), 1);
+    }
+
+    public String queryBuilderV6(String query, String topic) throws IOException, JWNLException {
+        return topic + " " + query + " " + modelExpansion(keywordExtract(query), 1);
     }
 }
