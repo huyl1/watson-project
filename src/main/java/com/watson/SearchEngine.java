@@ -60,6 +60,7 @@ public class SearchEngine {
     private Analyzer analyzerV2;
     private Analyzer analyzerV3;
     private Dictionary dict;
+    Word2Vec vec;
     public SearchEngine(String index_name) throws IOException, JWNLException {
         searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File("indicies/" + index_name).toPath())));
 
@@ -74,6 +75,7 @@ public class SearchEngine {
             .build();
 
         dict = Dictionary.getDefaultResourceInstance();
+        vec = WordVectorSerializer.readWord2VecModel("pathToSaveModel.txt");
         }
 
     public ArrayList<Document> searchV1_1(String query, int n) throws Exception {
@@ -203,9 +205,46 @@ public class SearchEngine {
         if (query.toLowerCase().contains("capital")) {
             //get all capitals from capitalCities.txt as a string
             String capitalCities = new String(Files.readAllBytes(Paths.get("dataset/capitalCities.txt")));
-            //0.22 weight is a magic number. Best number that works for the dataset. Overfitting?
-            results = QueryRescorer.rescore(searcher, results, parser.parse(capitalCities), 0.22, n);
+            //0.22 weight is a magic number. Used to be 0.22, but now 1 works better with LMD.
+            results = QueryRescorer.rescore(searcher, results, parser.parse(capitalCities), 1, n);
         }
+
+        int count = 0;
+        for (ScoreDoc scoreDoc : results.scoreDocs) {
+            documents.add(searcher.doc(scoreDoc.doc));
+            count++;
+            if (count == oldN) {
+                break;
+            }
+        }
+
+        return documents;
+    }
+
+    public ArrayList<Document> searchV2_3(String query, String topic, int n) throws Exception {
+        //if query string contains the word "capital"
+        int oldN = n;
+        if (n < 5) {
+            n = 5;}
+
+        LMDirichletSimilarity classic = new LMDirichletSimilarity();
+        searcher.setSimilarity(classic);
+
+        String preQuery = queryBuilderV4(query, topic);
+
+        QueryParser parser = new QueryParser("content", analyzerV2);
+        TopDocs results = searcher.search(parser.parse(preQuery), n);
+        ArrayList<Document> documents = new ArrayList<Document>();
+        
+
+        if (query.toLowerCase().contains("capital")) {
+            //get all capitals from capitalCities.txt as a string
+            String capitalCities = new String(Files.readAllBytes(Paths.get("dataset/capitalCities.txt")));
+            //1 weight is a magic number. Best number that works for the dataset. Overfitting?
+            results = QueryRescorer.rescore(searcher, results, parser.parse(capitalCities), 1, n);
+        }
+
+        results = QueryRescorer.rescore(searcher, results, parser.parse(modelExpansion(preQuery, 1)), 0.05, n);
 
         int count = 0;
         for (ScoreDoc scoreDoc : results.scoreDocs) {
@@ -366,8 +405,8 @@ public class SearchEngine {
     }
 
     public String modelExpansion(String query, int n) throws FileNotFoundException {
+        query = query.toLowerCase();
         String retVal = "";
-        Word2Vec vec = WordVectorSerializer.readWord2VecModel("pathToSaveModel.txt");
         String[] words = query.split(" " );
         for (int i = 0; i < words.length; i++) {
             Collection<String> nst = vec.wordsNearest(words[i], n);
@@ -376,6 +415,11 @@ public class SearchEngine {
             }
         }
         return retVal;
+    }
+
+    public String wordsNearest(String word, int n) {
+        Collection<String> lst = vec.wordsNearest(word, n);
+        return lst.toString();
     }
 
     public IndexWord synonymExpansionHelper(IndexWord indexWord, String word) throws JWNLException {
@@ -396,7 +440,7 @@ public class SearchEngine {
     }
 
     public String queryBuilderV4(String query, String topic) throws IOException, JWNLException {
-        return topic + " " + query + " " + synonymExpansion(query, 1);
+        return topic + " " + query + " " + locationNameExtract(query);
     }
 
     public String queryBuilderV5(String query, String topic) throws IOException, JWNLException {

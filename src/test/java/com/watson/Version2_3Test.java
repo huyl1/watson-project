@@ -18,7 +18,7 @@ public class Version2_3Test
     public void testQuestions() throws Exception {
         // Initializing vars we're gonna use
         int i = 0;                  // iterating through 
-        int cap = 20;                // how many doc titles we're skimming through
+        int cap = 1;                // how many doc titles we're skimming through
         int failed = 0;
         int passed = 0;
         int[] mrr = new int[cap];
@@ -49,8 +49,9 @@ public class Version2_3Test
                 boolean flag = false;
                 SearchEngine engine = new SearchEngine(version);
                 try {
-                    String queryString = engine.queryBuilderV3(query, topic);
-                    ArrayList<Document> documents = engine.searchV2_1(queryString, cap);
+                    String queryString = engine.queryBuilderV2(query, topic);
+                    ArrayList<Document> documents = engine.searchV2_2(queryString, cap);
+                    //ArrayList<Document> documents = engine.searchV2_3(query, topic, cap);
                     for (Document doc : documents) {
                         // In the case that there are multiple answers
                         if (answer.contains("|")) {
