@@ -2,6 +2,7 @@ package com.watson;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.Normalizer;
@@ -15,10 +16,11 @@ import org.apache.lucene.document.TextField;
 /*  Convert articles in Wikipedia files to Lucene documents. Document is the intermediate object. */
 public class WikipediaParser {
     public static void main(String[] args) {
-        ArrayList<Document> articles = parserV2("dataset/wiki-example.txt");
+        ArrayList<Document> articles = parserV4("dataset/wiki-example.txt");
+        System.out.println(articles.size());
         //print the 3rd article
-        System.out.println(articles.get(2).get("title"));
-        System.out.println(articles.get(2).get("content"));
+        // System.out.println(articles.get(2).get("title"));
+        // System.out.println(articles.get(2).get("content"));
 
     }
 
@@ -166,6 +168,13 @@ public class WikipediaParser {
                 }
 
             }
+            // FOR THE LAST DOCUMENT IN FILE
+            //clean the content
+            content_buffer = markUpRemover(content_buffer);
+            //make it ascii
+            content_buffer = Normalizer.normalize(content_buffer, Normalizer.Form.NFKD).replaceAll("[^\\p{ASCII}]", ""); 
+            buffer.add(new TextField("content", content_buffer, Field.Store.NO));
+            articles.add(buffer);
             br.close();
             
         } catch (IOException e) {
@@ -218,6 +227,41 @@ public class WikipediaParser {
         } catch (IOException e) {
             System.out.println(e);
         }
+
+        return articles;
+    }
+
+    public static ArrayList<String> parserV5(File file) throws IOException {
+        ArrayList<String> articles = new ArrayList<>();
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        String line;
+        Document buffer = null;
+        String content_buffer = null;
+
+        while ((line = br.readLine()) != null) {
+            //if line starts with [[ and end with ]], then it is a title
+            //create a new Document object
+            //containing the title, and the content until the next title
+            if (line.startsWith("[[") && line.endsWith("]]")) {
+                if (buffer != null) {
+                    //clean the content
+                    content_buffer = markUpRemover(content_buffer);
+                    //make it ascii
+                    content_buffer = Normalizer.normalize(content_buffer, Normalizer.Form.NFKD).replaceAll("[^\\p{ASCII}]", ""); 
+                    buffer.add(new TextField("content", content_buffer, Field.Store.NO));
+                    articles.add(content_buffer + "\n\n");
+                }
+                buffer = new Document();
+                buffer.add(new StringField("title", line.substring(2, line.length() - 2), Field.Store.YES));
+                content_buffer = line.substring(2, line.length() - 2);
+            } else {
+                if (!line.startsWith("==")) {
+                    content_buffer += line + " \n";
+                }
+            }
+        }
+        articles.add(content_buffer + "\n");
+        br.close();
 
         return articles;
     }
