@@ -16,10 +16,12 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 public class IndexBuilder {
-    public static void main(String[] args) throws IOException {
-        buildIndexVersion2_2("V2_3");
-    }
 
+    /**
+     * Builds an index for the example wikipedia file.
+     * @param index_name
+     * @throws IOException
+     */
     public static void buildIndexExample(String index_name) throws IOException {
         // Create a new index in the directory. Make sure you create a new directory for each new index. 
         // Make sure all indexes are in the same directory (indicies/)
@@ -39,8 +41,7 @@ public class IndexBuilder {
     }
 
     /**
-     * Builds an index for the wikipedia subset.
-     * No techniques used
+     * Builds an index for the wikipedia subset. Used standard analyzer.
      * @param index_name
      * @throws IOException
      */
@@ -68,6 +69,12 @@ public class IndexBuilder {
 
     }
 
+    /**
+     * Builds an index for the wikipedia subset. Used standard analyzer.
+     * Uses parserV2.
+     * @param index_name
+     * @throws IOException
+     */
     public static void buildIndexVersion1_1(String index_name) throws IOException {
         int count = 0;
         Directory dir = FSDirectory.open(new File("indicies/" + index_name).toPath());
@@ -123,6 +130,13 @@ public class IndexBuilder {
 
     }
 
+    /**
+     * Builds an index for the wikipedia subset.
+     * Techniques: Stopwords. Porter Stemming. Lemmatization.
+     * Uses parserV2.
+     * @param index_name
+     * @throws IOException
+     */
     public static void buildIndexVersion2_1(String index_name) throws IOException {
         int count = 0;
         Directory dir = FSDirectory.open(new File("indicies/" + index_name).toPath());
@@ -147,6 +161,13 @@ public class IndexBuilder {
         writer.close();
     }
 
+    /**
+     * Builds an index for the wikipedia subset.
+     * Techniques: Stopwords. Porter Stemming. Lemmatization. 
+     * Uses parserV3.
+     * @param index_name
+     * @throws IOException
+     */
     public static void buildIndexVersion2_2(String index_name) throws IOException {
         int count = 0;
         Directory dir = FSDirectory.open(new File("indicies/" + index_name).toPath());
@@ -171,6 +192,13 @@ public class IndexBuilder {
         writer.close();
     }
 
+    /**
+     * Builds an index for the wikipedia subset.
+     * Techniques: Stopwords. Porter Stemming. Lemmatization. 
+     * Uses parserV4.
+     * @param index_name
+     * @throws IOException
+     */
     public static void buildIndexVersion2_3(String index_name) throws IOException {
         int count = 0;
         Directory dir = FSDirectory.open(new File("indicies/" + index_name).toPath());
@@ -236,6 +264,13 @@ public class IndexBuilder {
 
     }
 
+    /**
+     * Builds an index for the wikipedia subset.
+     * Techniques: Stopwords. Lemmatization.
+     * Uses parserV4.
+     * @param index_name
+     * @throws IOException
+     */
     public static void buildIndexVersion3_3(String index_name) throws IOException {
         int count = 0;
         Directory dir = FSDirectory.open(new File("indicies/" + index_name).toPath());

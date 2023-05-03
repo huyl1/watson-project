@@ -13,6 +13,9 @@ import org.apache.lucene.analysis.opennlp.OpenNLPLemmatizerFilterFactory;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.document.Document;
 
+/**
+ * This class is used to test different analyzers.
+ */
 public class AnalyzerTester {
     public static void main(String[] args) throws IOException {
         Analyzer v2Analyzer = new EnglishAnalyzer();

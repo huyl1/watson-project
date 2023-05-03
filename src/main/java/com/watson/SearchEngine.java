@@ -78,6 +78,30 @@ public class SearchEngine {
         vec = WordVectorSerializer.readWord2VecModel("pathToSaveModel.txt");
         }
 
+    /**
+     * Simple search using the standard analyzer.
+     * @param query
+     * @param n
+     * @return
+     * @throws Exception
+     */
+    public ArrayList<Document> searchV1(String query, int n) throws Exception {
+        QueryParser parser = new QueryParser("content", analyzerV1);
+        TopDocs results = searcher.search(parser.parse(query), n);
+        ArrayList<Document> documents = new ArrayList<Document>();
+        for (ScoreDoc scoreDoc : results.scoreDocs) {
+            documents.add(searcher.doc(scoreDoc.doc));
+        }
+        return documents;
+    }
+
+    /**
+     * Basically V1, but with a different similarity function.
+     * @param query
+     * @param n
+     * @return
+     * @throws Exception
+     */
     public ArrayList<Document> searchV1_1(String query, int n) throws Exception {
         LMDirichletSimilarity lmd = new LMDirichletSimilarity();
         searcher.setSimilarity(lmd);
@@ -91,31 +115,14 @@ public class SearchEngine {
         return documents;
     }
 
-    public ArrayList<Document> searchV1(String query, int n) throws Exception {
-        QueryParser parser = new QueryParser("content", analyzerV1);
-        TopDocs results = searcher.search(parser.parse(query), n);
-        ArrayList<Document> documents = new ArrayList<Document>();
-        for (ScoreDoc scoreDoc : results.scoreDocs) {
-            documents.add(searcher.doc(scoreDoc.doc));
-        }
-        return documents;
-    }
-
-    public ArrayList<ScoreDoc> searchV1Scores(String query, int n) throws Exception {
-        QueryParser parser = new QueryParser("content", analyzerV1);
-        TopDocs results = searcher.search(parser.parse(query), n);
-        ArrayList<ScoreDoc> documents = new ArrayList<ScoreDoc>();
-        for (ScoreDoc scoreDoc : results.scoreDocs) {
-            documents.add(scoreDoc);
-        }
-        return documents;
-    }
-
+    /**
+     * Simple search using the English analyzer.
+     * @param query
+     * @param n
+     * @return
+     * @throws Exception
+     */
     public ArrayList<Document> searchV2(String query, int n) throws Exception {
-        // Can comment this out if needed
-        LMDirichletSimilarity lmd = new LMDirichletSimilarity();
-        searcher.setSimilarity(lmd);
-
         QueryParser parser = new QueryParser("content", analyzerV2);
         TopDocs results = searcher.search(parser.parse(query), n);
         ArrayList<Document> documents = new ArrayList<Document>();
@@ -125,39 +132,13 @@ public class SearchEngine {
         return documents;
     }
 
-    public ArrayList<ScoreDoc> searchV2Scores(String query, int n) throws Exception {
-        QueryParser parser = new QueryParser("content", analyzerV2);
-
-        TopDocs results = searcher.search(parser.parse(query), n);
-        ArrayList<ScoreDoc> documents = new ArrayList<ScoreDoc>();
-        for (ScoreDoc scoreDoc : results.scoreDocs) {
-            documents.add(scoreDoc);
-        }
-        return documents;
-    }
-
-    public ArrayList<Document> searchV3(String query, int n) throws Exception {
-        QueryParser parser = new QueryParser("content", analyzerV3);
-
-        TopDocs results = searcher.search(parser.parse(query), n);
-        ArrayList<Document> documents = new ArrayList<Document>();
-        for (ScoreDoc scoreDoc : results.scoreDocs) {
-            documents.add(searcher.doc(scoreDoc.doc));
-        }
-        return documents;
-    }
-
-    public ArrayList<ScoreDoc> searchV3Scores(String query, int n) throws Exception {
-        QueryParser parser = new QueryParser("content", analyzerV3);
-
-        TopDocs results = searcher.search(parser.parse(query), n);
-        ArrayList<ScoreDoc> documents = new ArrayList<ScoreDoc>();
-        for (ScoreDoc scoreDoc : results.scoreDocs) {
-            documents.add(scoreDoc);
-        }
-        return documents;
-    }
-
+    /**
+     * Same as original, but recalcultes scores for capital queries.
+     * @param query
+     * @param n
+     * @return
+     * @throws Exception
+     */
     public ArrayList<Document> searchV2_1(String query, int n) throws Exception {
         //if query string contains the word "capital"
         int oldN = n;
@@ -188,6 +169,13 @@ public class SearchEngine {
         return documents;
     }
 
+    /**
+     * Same as original, but recalcultes scores for capital queries and uses a different similarity function.
+     * @param query
+     * @param n
+     * @return
+     * @throws Exception
+     */
     public ArrayList<Document> searchV2_2(String query, int n) throws Exception {
         //if query string contains the word "capital"
         int oldN = n;
@@ -221,6 +209,14 @@ public class SearchEngine {
         return documents;
     }
 
+    /**
+     * Uses a different similarity function and tries to rescore the query using keywords.
+     * @param query
+     * @param topic
+     * @param n
+     * @return
+     * @throws Exception
+     */
     public ArrayList<Document> searchV2_3(String query, String topic, int n) throws Exception {
         //if query string contains the word "capital"
         int oldN = n;
@@ -258,6 +254,30 @@ public class SearchEngine {
         return documents;
     }
 
+    /**
+     * Simple search using the custom analyzer (with lemmatization).
+     * @param query
+     * @param n
+     * @return
+     * @throws Exception
+     */
+    public ArrayList<Document> searchV3(String query, int n) throws Exception {
+        QueryParser parser = new QueryParser("content", analyzerV3);
+
+        TopDocs results = searcher.search(parser.parse(query), n);
+        ArrayList<Document> documents = new ArrayList<Document>();
+        for (ScoreDoc scoreDoc : results.scoreDocs) {
+            documents.add(searcher.doc(scoreDoc.doc));
+        }
+        return documents;
+    }
+
+    /**
+     * Use the RAKE algorithm to extract keywords from the query and use them to expand the query.
+     * @param query
+     * @return
+     * @throws IOException
+     */
     public String keywordExtract(String query) throws IOException {
         // Create an object to hold algorithm parameters
         String[] stopWords = new SmartWords().getSmartWords(); 
@@ -283,6 +303,12 @@ public class SearchEngine {
         return keywordString;
     }
 
+    /**
+     * Use the OpenNLP library to extract names from the query and use them to expand the query.
+     * @param query
+     * @return
+     * @throws IOException
+     */
     public String personNameExtract(String query) throws IOException {
         //Loading the tokenizer model 
         InputStream inputStreamTokenizer = new FileInputStream("NLPmodels/en-token.bin");
@@ -305,6 +331,12 @@ public class SearchEngine {
         return retval;
     }
 
+    /**
+     * Use the OpenNLP library to extract locations from the query and use them to expand the query.
+     * @param query
+     * @return
+     * @throws IOException
+     */
     public String locationNameExtract(String query) throws IOException {
         //Loading the tokenizer model 
         InputStream inputStreamTokenizer = new FileInputStream("NLPmodels/en-token.bin");
@@ -327,6 +359,12 @@ public class SearchEngine {
         return retval;
     }
 
+    /**
+     * Use the OpenNLP library to extract organizations from the query and use them to expand the query.
+     * @param query
+     * @return
+     * @throws IOException
+     */
     public String organizationNameExtract(String query) throws IOException {
         //Loading the tokenizer model 
         InputStream inputStreamTokenizer = new FileInputStream("NLPmodels/en-token.bin");
@@ -349,6 +387,12 @@ public class SearchEngine {
         return retval;
     }
 
+    /**
+     * Use the OpenNLP library to extract organizations from the query and use them to expand the query.
+     * @param query
+     * @return
+     * @throws IOException
+     */
     public String dateExtract(String query) throws IOException {
         //Loading the tokenizer model 
         InputStream inputStreamTokenizer = new FileInputStream("NLPmodels/en-token.bin");
@@ -371,6 +415,12 @@ public class SearchEngine {
         return retval;
     }
 
+    /**
+     * Used wordnet to expand the query.
+     * @param query
+     * @return
+     * @throws IOException
+     */
     public String synonymExpansion(String query, int cap) throws IOException, JWNLException {
         String retVal = "";
         String[] words = query.split(" ");
@@ -404,6 +454,12 @@ public class SearchEngine {
         return retVal;
     }
 
+    /**
+     * Used word2vec to expand the query.
+     * @param query
+     * @return
+     * @throws IOException
+     */
     public String modelExpansion(String query, int n) throws FileNotFoundException {
         query = query.toLowerCase();
         String retVal = "";
@@ -417,6 +473,12 @@ public class SearchEngine {
         return retVal;
     }
 
+    /**
+     * Used word2vec to expand the query.
+     * @param query
+     * @return
+     * @throws IOException
+     */
     public String wordsNearest(String word, int n) {
         Collection<String> lst = vec.wordsNearest(word, n);
         return lst.toString();
@@ -426,28 +488,33 @@ public class SearchEngine {
         return dict.lookupIndexWord(indexWord.getPOS(), word);
     }
 
+    /**
+     * Simplest query builder, just adds the topic to the query.
+     * @param query
+     * @return
+     * @throws IOException
+     */
     public String queryBuilderV1(String query, String topic) throws IOException {
         return query + " " + topic;
     }
 
+    /**
+     * Adds the topic and the keywords to the query.
+     * @param query
+     * @return
+     * @throws IOException
+     */
     public String queryBuilderV2(String query, String topic) throws IOException {
         return query + " " + topic + " " + keywordExtract(query);
     }
 
+    /**
+     * Adds the topic, keywords, and synonyms to the query.
+     * @param query
+     * @return
+     * @throws IOException
+     */
     public String queryBuilderV3(String query, String topic) throws IOException, JWNLException {
-        String location = locationNameExtract(query);
-        return query + " " + topic + " " + keywordExtract(query) + synonymExpansion(location, 3);
-    }
-
-    public String queryBuilderV4(String query, String topic) throws IOException, JWNLException {
-        return queryBuilderV2(query, topic) + " " + locationNameExtract(query);
-    }
-
-    public String queryBuilderV5(String query, String topic) throws IOException, JWNLException {
-        return topic + " " + query + " " + synonymExpansion(keywordExtract(query), 1);
-    }
-
-    public String queryBuilderV6(String query, String topic) throws IOException, JWNLException {
-        return topic + " " + query + " " + modelExpansion(keywordExtract(query), 1);
+        return query + " " + topic + " " + keywordExtract(query) + modelExpansion(query, 1);
     }
 }
