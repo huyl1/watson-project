@@ -17,7 +17,7 @@ import org.apache.lucene.store.FSDirectory;
 
 public class IndexBuilder {
     public static void main(String[] args) throws IOException {
-        //Testing grounds
+        buildIndexVersion2_2("V2_3");
     }
 
     public static void buildIndexExample(String index_name) throws IOException {
@@ -68,6 +68,30 @@ public class IndexBuilder {
 
     }
 
+    public static void buildIndexVersion1_1(String index_name) throws IOException {
+        int count = 0;
+        Directory dir = FSDirectory.open(new File("indicies/" + index_name).toPath());
+        IndexWriterConfig config = new IndexWriterConfig(new StandardAnalyzer());
+        IndexWriter writer = new IndexWriter(dir, config);
+
+        //Run WikipediaParse on all files in dataset/wiki-subset-20140602
+        File folder = new File("dataset/wiki-subset-20140602");
+        File[] listOfFiles = folder.listFiles();
+        for (File file : listOfFiles) {
+            if (file.isFile()) {
+                ArrayList<Document> documents= WikipediaParser.parserV2(file.getPath());
+                for (Document doc : documents) {
+                    writer.addDocument(doc);
+                    count++;
+                    if (count % 10000 == 0) System.out.println(count + " documents added to index");
+                }
+            }
+        }
+
+        writer.close();
+
+    }
+
     /**
      * Builds an index for the wikipedia subset.
      * Techniques: Stopwords. Porter Stemming.
@@ -99,6 +123,78 @@ public class IndexBuilder {
 
     }
 
+    public static void buildIndexVersion2_1(String index_name) throws IOException {
+        int count = 0;
+        Directory dir = FSDirectory.open(new File("indicies/" + index_name).toPath());
+
+        IndexWriterConfig config = new IndexWriterConfig(new EnglishAnalyzer());
+        IndexWriter writer = new IndexWriter(dir, config);
+
+        //Run WikipediaParse on all files in dataset/wiki-subset-20140602
+        File folder = new File("dataset/wiki-subset-20140602");
+        File[] listOfFiles = folder.listFiles();
+        for (File file : listOfFiles) {
+            if (file.isFile()) {
+                ArrayList<Document> documents= WikipediaParser.parserV2(file.getPath());
+                for (Document doc : documents) {
+                    writer.addDocument(doc);
+                    count++;
+                    if (count % 10000 == 0) System.out.println(count + " documents added to index");
+                }
+            }
+        }
+
+        writer.close();
+    }
+
+    public static void buildIndexVersion2_2(String index_name) throws IOException {
+        int count = 0;
+        Directory dir = FSDirectory.open(new File("indicies/" + index_name).toPath());
+
+        IndexWriterConfig config = new IndexWriterConfig(new EnglishAnalyzer());
+        IndexWriter writer = new IndexWriter(dir, config);
+
+        //Run WikipediaParse on all files in dataset/wiki-subset-20140602
+        File folder = new File("dataset/wiki-subset-20140602");
+        File[] listOfFiles = folder.listFiles();
+        for (File file : listOfFiles) {
+            if (file.isFile()) {
+                ArrayList<Document> documents= WikipediaParser.parserV3(file.getPath());
+                for (Document doc : documents) {
+                    writer.addDocument(doc);
+                    count++;
+                    if (count % 10000 == 0) System.out.println(count + " documents added to index");
+                }
+            }
+        }
+
+        writer.close();
+    }
+
+    public static void buildIndexVersion2_3(String index_name) throws IOException {
+        int count = 0;
+        Directory dir = FSDirectory.open(new File("indicies/" + index_name).toPath());
+
+        IndexWriterConfig config = new IndexWriterConfig(new EnglishAnalyzer());
+        IndexWriter writer = new IndexWriter(dir, config);
+
+        //Run WikipediaParse on all files in dataset/wiki-subset-20140602
+        File folder = new File("dataset/wiki-subset-20140602");
+        File[] listOfFiles = folder.listFiles();
+        for (File file : listOfFiles) {
+            if (file.isFile()) {
+                ArrayList<Document> documents= WikipediaParser.parserV4(file.getPath());
+                for (Document doc : documents) {
+                    writer.addDocument(doc);
+                    count++;
+                    if (count % 10000 == 0) System.out.println(count + " documents added to index");
+                }
+            }
+        }
+
+        writer.close();
+    }
+
     /**
      * Builds an index for the wikipedia subset.
      * Techniques: Stopwords. Lemmatization.
@@ -128,6 +224,41 @@ public class IndexBuilder {
         for (File file : listOfFiles) {
             if (file.isFile()) {
                 ArrayList<Document> documents= WikipediaParser.parserV1(file.getPath());
+                for (Document doc : documents) {
+                    writer.addDocument(doc);
+                    count++;
+                    if (count % 10000 == 0) System.out.println(count + " documents added to index");
+                }
+            }
+        }
+
+        writer.close();
+
+    }
+
+    public static void buildIndexVersion3_3(String index_name) throws IOException {
+        int count = 0;
+        Directory dir = FSDirectory.open(new File("indicies/" + index_name).toPath());
+
+
+        Analyzer customAnalyzer = CustomAnalyzer.builder()
+            .withTokenizer("standard")
+            .addTokenFilter("lowercase")
+            .addTokenFilter("stop")
+            .addTokenFilter("englishPossessive")
+            .addTokenFilter(OpenNLPLemmatizerFilterFactory.class, "dictionary", "en-lemmatizer.dict", "lemmatizerModel", "en-lemmatizer.bin")
+            .build();
+
+
+        IndexWriterConfig config = new IndexWriterConfig(customAnalyzer);
+        IndexWriter writer = new IndexWriter(dir, config);
+
+        //Run WikipediaParse on all files in dataset/wiki-subset-20140602
+        File folder = new File("dataset/wiki-subset-20140602");
+        File[] listOfFiles = folder.listFiles();
+        for (File file : listOfFiles) {
+            if (file.isFile()) {
+                ArrayList<Document> documents= WikipediaParser.parserV4(file.getPath());
                 for (Document doc : documents) {
                     writer.addDocument(doc);
                     count++;

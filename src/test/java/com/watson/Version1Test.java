@@ -49,7 +49,8 @@ public class Version1Test
                 boolean flag = false;
                 SearchEngine engine = new SearchEngine(version);
                 try {
-                    ArrayList<Document> documents = engine.searchV1(query, cap);
+                    String queryString = engine.queryBuilderV1(query, topic);
+                    ArrayList<Document> documents = engine.searchV1(queryString, cap);
                     for (Document doc : documents) {
                         // In the case that there are multiple answers
                         if (answer.contains("|")) {

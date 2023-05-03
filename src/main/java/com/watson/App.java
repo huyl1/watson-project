@@ -1,55 +1,42 @@
 package com.watson;
-import java.io.IOException;
-import java.io.StringReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.List;
 
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.custom.CustomAnalyzer;
-import org.apache.lucene.analysis.en.EnglishAnalyzer;
-import org.apache.lucene.analysis.opennlp.OpenNLPLemmatizerFilterFactory;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.document.Document;
 
 public class App 
 {
     public static void main( String[] args ) throws Exception
     {
-        // SearchEngine engine = new SearchEngine("V1");
-        // ArrayList<Document> documents = engine.searchV1("Daniel Hertzberg & James B. Stewart of this paper shared a 1988 Pulitzer for their stories about insider trading", 10);
-        // for (Document doc : documents) {
-        //     System.out.println(doc.get("title"));
-        // }
-
-        Analyzer v2Analyzer = new EnglishAnalyzer();
-
-        Analyzer v3Analyzer = CustomAnalyzer.builder()
-            .withTokenizer("standard")
-            .addTokenFilter("lowercase")
-            .addTokenFilter("stop")
-            .addTokenFilter(OpenNLPLemmatizerFilterFactory.class, "dictionary", "en-lemmatizer.dict", "lemmatizerModel", "en-lemmatizer.bin")
-            .build();
-
-        ArrayList<Document> documents = WikipediaParser.parserV1("dataset/wiki-example.txt");
-        String example = documents.get(1).get("content");
-        System.out.println(tokenizeString(v3Analyzer, example));
-        System.out.println(tokenizeString(v2Analyzer, example));
-    }
-
-    public static List<String> tokenizeString(Analyzer analyzer, String string) {
-        List<String> result = new ArrayList<String>();
-        try {
-          TokenStream stream  = analyzer.tokenStream(null, new StringReader(string));
-          stream.reset();
-          while (stream.incrementToken()) {
-            result.add(stream.getAttribute(CharTermAttribute.class).toString());
-          }
-        } catch (IOException e) {
-          // not thrown b/c we're using a string reader...
-          throw new RuntimeException(e);
+        Path dir = Paths.get("indicies/V3");
+        if (Files.exists(dir)) {
+            System.out.println("Index already exists. Skipping index creation.");
+        } else {
+            IndexBuilder.buildIndexVersion2_3("V2_3");
         }
-        return result;
-      }
+        SearchEngine engine = new SearchEngine("V2_3");
+
+        while (true) {
+            System.out.println("Enter a query: (exit to quit)");
+            String query = System.console().readLine();
+            if (query.equals("exit")) {
+                break;
+            }
+            System.out.println("Enter a topic: ");
+            String topic = System.console().readLine();
+
+            String queryString = engine.queryBuilderV2(query, topic);
+            System.out.println("Searching ...");
+            ArrayList<Document> results = engine.searchV2_2(queryString, 1);
+            if (results.size() == 0) {
+                System.out.println("No results found.");
+            }
+            else {
+                System.out.println("Is it " + results.get(0).get("title") + "?");
+            }
+        }
+    }
 
 }
