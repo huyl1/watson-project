@@ -2,7 +2,6 @@ package com.watson;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.Normalizer;
@@ -82,8 +81,8 @@ public class WikipediaParser {
     }
 
     /**
-     * The second parser version removes all categories and section headers. However,
-     * keeps links and "See also" section.
+     * The second parser version is the same as V1, but instead of removing the references,
+     * it tries to extract the text from the references.
      * @param file_name
      * @return
      */
@@ -135,7 +134,7 @@ public class WikipediaParser {
     }
 
     /**
-     * Same as V2.
+     * Same as V2, but does not extract text from references.
      * @param file_name
      * @return
      */
@@ -193,6 +192,12 @@ public class WikipediaParser {
         return articles;
     }
 
+    /**
+     * The optimal parser version. It removes the references, and extracts the text from the references.
+     * Keeps as much text from the article as possible.
+     * @param file_name
+     * @return
+     */
     public static ArrayList<Document> parserV4(String file_name) {
         ArrayList<Document> articles = new ArrayList<>();
         //open file_name
@@ -240,6 +245,11 @@ public class WikipediaParser {
         return articles;
     }
     
+    /**
+     * Removes all the markup tags from the content.
+     * @param content
+     * @return
+     */
     private static String markUpRemover(String content) {
         //first make all whitespace characters into a single space
         content = content.replaceAll("\\s+", " ");
@@ -257,6 +267,12 @@ public class WikipediaParser {
         return content;
     }
     
+    /**
+     * Removes all the markup tags from the content, but extract
+     * titles from references.
+     * @param content
+     * @return
+     */
     private static String customRemover(String content) {
         //first make all whitespace characters into a single space
         content = content.replaceAll("\\s+", " ");
