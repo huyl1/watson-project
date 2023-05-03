@@ -25,7 +25,7 @@ public class WikipediaParser {
      * Parse a Wikipedia dump file and return a list of Document objects.
      * The first parser version removes all categories, links, and references,
      * and everything after "See also" section. All section headers are also removed.
-     * @param file_name
+     * @param file_name : File name
      */
     public static ArrayList<Document> parserV1(String file_name) {
         ArrayList<Document> articles = new ArrayList<>();
@@ -83,8 +83,8 @@ public class WikipediaParser {
     /**
      * The second parser version is the same as V1, but instead of removing the references,
      * it tries to extract the text from the references.
-     * @param file_name
-     * @return
+     * @param file_name : File name
+     * @return An arraylist of documents separated by titles
      */
     public static ArrayList<Document> parserV2(String file_name) {
         ArrayList<Document> articles = new ArrayList<>();
@@ -135,8 +135,8 @@ public class WikipediaParser {
 
     /**
      * Same as V2, but does not extract text from references.
-     * @param file_name
-     * @return
+     * @param file_name : File name
+     * @return An arraylist of documents separated by titles
      */
     public static ArrayList<Document> parserV3(String file_name) {
         ArrayList<Document> articles = new ArrayList<>();
@@ -195,8 +195,8 @@ public class WikipediaParser {
     /**
      * The optimal parser version. It removes the references, and extracts the text from the references.
      * Keeps as much text from the article as possible.
-     * @param file_name
-     * @return
+     * @param file_name : File name
+     * @return An arraylist of documents separated by titles
      */
     public static ArrayList<Document> parserV4(String file_name) {
         ArrayList<Document> articles = new ArrayList<>();
@@ -247,8 +247,8 @@ public class WikipediaParser {
     
     /**
      * Removes all the markup tags from the content.
-     * @param content
-     * @return
+     * @param content : The content of the wikipedia page
+     * @return The content with markups removed
      */
     private static String markUpRemover(String content) {
         //first make all whitespace characters into a single space
@@ -270,8 +270,8 @@ public class WikipediaParser {
     /**
      * Removes all the markup tags from the content, but extract
      * titles from references.
-     * @param content
-     * @return
+     * @param content : The content of the wikipedia page
+     * @return The content with markups and title removed (from references)
      */
     private static String customRemover(String content) {
         //first make all whitespace characters into a single space

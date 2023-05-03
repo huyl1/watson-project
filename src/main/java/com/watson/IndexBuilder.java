@@ -15,11 +15,17 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
+/*
+ * The purpose of this class is to build the index using 
+ * Lucene's IndexWriter. Down below is a variety of different
+ * ways we've built the index, whether it's not modifying
+ * the contents, stemming, or lemmatization.
+ */
 public class IndexBuilder {
 
     /**
      * Builds an index for the example wikipedia file.
-     * @param index_name
+     * @param index_name : Where to write the files to
      * @throws IOException
      */
     public static void buildIndexExample(String index_name) throws IOException {
@@ -42,7 +48,7 @@ public class IndexBuilder {
 
     /**
      * Builds an index for the wikipedia subset. Used standard analyzer.
-     * @param index_name
+     * @param index_name : Where to write the files to
      * @throws IOException
      */
     public static void buildIndexVersion1(String index_name) throws IOException {
@@ -72,7 +78,7 @@ public class IndexBuilder {
     /**
      * Builds an index for the wikipedia subset. Used standard analyzer.
      * Uses parserV2.
-     * @param index_name
+     * @param index_name : Where to write the files to
      * @throws IOException
      */
     public static void buildIndexVersion1_1(String index_name) throws IOException {
@@ -102,7 +108,7 @@ public class IndexBuilder {
     /**
      * Builds an index for the wikipedia subset.
      * Techniques: Stopwords. Porter Stemming.
-     * @param index_name
+     * @param index_name : Where to write the files to
      * @throws IOException
      */
     public static void buildIndexVersion2(String index_name) throws IOException {
@@ -134,7 +140,7 @@ public class IndexBuilder {
      * Builds an index for the wikipedia subset.
      * Techniques: Stopwords. Porter Stemming. Lemmatization.
      * Uses parserV2.
-     * @param index_name
+     * @param index_name : Where to write the files to
      * @throws IOException
      */
     public static void buildIndexVersion2_1(String index_name) throws IOException {
@@ -165,7 +171,7 @@ public class IndexBuilder {
      * Builds an index for the wikipedia subset.
      * Techniques: Stopwords. Porter Stemming. Lemmatization. 
      * Uses parserV3.
-     * @param index_name
+     * @param index_name : Where to write the files to
      * @throws IOException
      */
     public static void buildIndexVersion2_2(String index_name) throws IOException {
@@ -196,7 +202,7 @@ public class IndexBuilder {
      * Builds an index for the wikipedia subset.
      * Techniques: Stopwords. Porter Stemming. Lemmatization. 
      * Uses parserV4.
-     * @param index_name
+     * @param index_name : Where to write the files to
      * @throws IOException
      */
     public static void buildIndexVersion2_3(String index_name) throws IOException {
@@ -226,7 +232,7 @@ public class IndexBuilder {
     /**
      * Builds an index for the wikipedia subset.
      * Techniques: Stopwords. Lemmatization.
-     * @param index_name
+     * @param index_name : Where to write the files to
      * @throws IOException
      */
     public static void buildIndexVersion3(String index_name) throws IOException {
@@ -268,7 +274,7 @@ public class IndexBuilder {
      * Builds an index for the wikipedia subset.
      * Techniques: Stopwords. Lemmatization.
      * Uses parserV4.
-     * @param index_name
+     * @param index_name : Where to write the files to
      * @throws IOException
      */
     public static void buildIndexVersion3_3(String index_name) throws IOException {

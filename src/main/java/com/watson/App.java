@@ -6,6 +6,12 @@ import java.util.ArrayList;
 
 import org.apache.lucene.document.Document;
 
+/*
+ * The purpose of this class serves as our main
+ * java file where users can run custom queries.
+ * This is using the indexes, search engine, and
+ * query builder that gave us the best results.
+ */
 public class App 
 {
     public static void main( String[] args ) throws Exception

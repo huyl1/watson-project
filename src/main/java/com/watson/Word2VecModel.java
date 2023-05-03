@@ -39,16 +39,23 @@ public class Word2VecModel {
         File folder = new File("dataset/wiki-subset-20140602");
         File[] listOfFiles = folder.listFiles();
         for (File file : listOfFiles) {
-                ArrayList<String> temp = WikipediaParser.parserV5(file);
+
+                // HAVE TO CHANGE to either accept Documents OR change parserV4 to return an arraylist of strings
+                ArrayList<String> temp = WikipediaParser.parserV4(file);
                 String[] temp2 = new String[temp.size()];
                 for (int i = 0; i < temp.size(); i++) {temp2[i] = temp.get(i);}
 
-                for (int i = 0; i < temp2.length; i++) {System.out.println(temp2[i]);}
+                // For debugging purposes
+                // for (int i = 0; i < temp2.length; i++) {System.out.println(temp2[i]);}
 
+                // Properly tokenize data
                 Collection<String> sentences = Arrays.asList(temp2);
                 SentenceIterator iter =  new CollectionSentenceIterator(sentences);
                 DefaultTokenizerFactory t = new DefaultTokenizerFactory();
                 t.setTokenPreProcessor(new CommonPreprocessor());
+
+                // If it's the first iterating through the list of files, it will build the model and fit it 
+                // based on the data.
                 if (x == 0) {
                         Word2Vec vec = new Word2Vec.Builder()
                                 .minWordFrequency(5)
@@ -63,6 +70,8 @@ public class Word2VecModel {
                         vec.fit();
                         WordVectorSerializer.writeWord2VecModel(vec, "pathToSaveModel.txt");;
                 } else {
+                        // If the model already exists, then we open it and fit based on current and previous data
+                        // It's always building, never replacing
                         Word2Vec vec = WordVectorSerializer.readWord2VecModel("pathToSaveModel.txt");
                         vec.setTokenizerFactory(t);
                         vec.setSentenceIterator(iter);

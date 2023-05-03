@@ -7,11 +7,9 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.similarities.ClassicSimilarity;
 import org.apache.lucene.search.similarities.LMDirichletSimilarity;
 import org.apache.lucene.search.similarities.TFIDFSimilarity;
-import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.FSDirectory;
 import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
 import org.deeplearning4j.models.word2vec.Word2Vec;
-import org.nd4j.linalg.api.ops.impl.reduce3.CosineSimilarity;
 
 import io.github.crew102.rapidrake.RakeAlgorithm;
 import io.github.crew102.rapidrake.data.SmartWords;
@@ -37,23 +35,22 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.custom.CustomAnalyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.opennlp.OpenNLPLemmatizerFilterFactory;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 
+/*
+ * This class is used to search through our indexed documents using 
+ * Lucene's IndexSearcher. The class holds a variety of analyzers 
+ * for different use cases.
+ */
 public class SearchEngine {
     private IndexSearcher searcher;
     private Analyzer analyzerV1;
@@ -80,9 +77,9 @@ public class SearchEngine {
 
     /**
      * Simple search using the standard analyzer.
-     * @param query
-     * @param n
-     * @return
+     * @param query : The query itself
+     * @param n : Used to determine how many documents to return (n = 3; top 3 documents)
+     * @return : Top n documents
      * @throws Exception
      */
     public ArrayList<Document> searchV1(String query, int n) throws Exception {
@@ -97,9 +94,9 @@ public class SearchEngine {
 
     /**
      * Basically V1, but with a different similarity function.
-     * @param query
-     * @param n
-     * @return
+     * @param query : The query itself
+     * @param n : Used to determine how many documents to return (n = 3; top 3 documents)
+     * @return : Top n documents
      * @throws Exception
      */
     public ArrayList<Document> searchV1_1(String query, int n) throws Exception {
@@ -117,9 +114,9 @@ public class SearchEngine {
 
     /**
      * Simple search using the English analyzer.
-     * @param query
-     * @param n
-     * @return
+     * @param query : The query itself
+     * @param n : Used to determine how many documents to return (n = 3; top 3 documents)
+     * @return : Top n documents
      * @throws Exception
      */
     public ArrayList<Document> searchV2(String query, int n) throws Exception {
@@ -134,9 +131,9 @@ public class SearchEngine {
 
     /**
      * Same as original, but recalcultes scores for capital queries.
-     * @param query
-     * @param n
-     * @return
+     * @param query : The query itself
+     * @param n : Used to determine how many documents to return (n = 3; top 3 documents)
+     * @return : Top n documents
      * @throws Exception
      */
     public ArrayList<Document> searchV2_1(String query, int n) throws Exception {
@@ -171,9 +168,9 @@ public class SearchEngine {
 
     /**
      * Same as original, but recalcultes scores for capital queries and uses a different similarity function.
-     * @param query
-     * @param n
-     * @return
+     * @param query : The query itself
+     * @param n : Used to determine how many documents to return (n = 3; top 3 documents)
+     * @return : Top n documents
      * @throws Exception
      */
     public ArrayList<Document> searchV2_2(String query, int n) throws Exception {
@@ -211,10 +208,10 @@ public class SearchEngine {
 
     /**
      * Uses a different similarity function and tries to rescore the query using keywords.
-     * @param query
-     * @param topic
-     * @param n
-     * @return
+     * @param query : The query itself
+     * @param topic : Takes in the topic of the query
+     * @param n : Used to determine how many documents to return (n = 3; top 3 documents)
+     * @return Top n documents
      * @throws Exception
      */
     public ArrayList<Document> searchV2_3(String query, String topic, int n) throws Exception {
@@ -256,9 +253,9 @@ public class SearchEngine {
 
     /**
      * Simple search using the custom analyzer (with lemmatization).
-     * @param query
-     * @param n
-     * @return
+     * @param query : The query itself
+     * @param n : Used to determine how many documents to return (n = 3; top 3 documents)
+     * @return : Top n documents
      * @throws Exception
      */
     public ArrayList<Document> searchV3(String query, int n) throws Exception {
@@ -274,8 +271,8 @@ public class SearchEngine {
 
     /**
      * Use the RAKE algorithm to extract keywords from the query and use them to expand the query.
-     * @param query
-     * @return
+     * @param query : The query itself
+     * @return : A string that contains important keywords based on the query
      * @throws IOException
      */
     public String keywordExtract(String query) throws IOException {
@@ -305,8 +302,8 @@ public class SearchEngine {
 
     /**
      * Use the OpenNLP library to extract names from the query and use them to expand the query.
-     * @param query
-     * @return
+     * @param query : The query itself
+     * @return : A string that contains important names based on the query
      * @throws IOException
      */
     public String personNameExtract(String query) throws IOException {
@@ -333,8 +330,8 @@ public class SearchEngine {
 
     /**
      * Use the OpenNLP library to extract locations from the query and use them to expand the query.
-     * @param query
-     * @return
+     * @param query : The query itself
+     * @return : A string that contains important locations based on the query
      * @throws IOException
      */
     public String locationNameExtract(String query) throws IOException {
@@ -361,8 +358,8 @@ public class SearchEngine {
 
     /**
      * Use the OpenNLP library to extract organizations from the query and use them to expand the query.
-     * @param query
-     * @return
+     * @param query : The query itself
+     * @return : A string that contains important organizations based on the query
      * @throws IOException
      */
     public String organizationNameExtract(String query) throws IOException {
@@ -389,8 +386,8 @@ public class SearchEngine {
 
     /**
      * Use the OpenNLP library to extract organizations from the query and use them to expand the query.
-     * @param query
-     * @return
+     * @param query : The query itself
+     * @return : A string that contains important dates based on the query
      * @throws IOException
      */
     public String dateExtract(String query) throws IOException {
@@ -417,8 +414,9 @@ public class SearchEngine {
 
     /**
      * Used wordnet to expand the query.
-     * @param query
-     * @return
+     * @param query : The query itself
+     * @param cap : User inputs how many synonyms they want to return
+     * @return : A string of synonyms based off the query 
      * @throws IOException
      */
     public String synonymExpansion(String query, int cap) throws IOException, JWNLException {
@@ -456,8 +454,9 @@ public class SearchEngine {
 
     /**
      * Used word2vec to expand the query.
-     * @param query
-     * @return
+     * @param query : The query itself
+     * @param n : User can change how many related words to return per word in the query
+     * @return : A string of all related words
      * @throws IOException
      */
     public String modelExpansion(String query, int n) throws FileNotFoundException {
@@ -475,8 +474,9 @@ public class SearchEngine {
 
     /**
      * Used word2vec to expand the query.
-     * @param query
-     * @return
+     * @param word : The word that we want to find similar terms for
+     * @param n : How many words to return based on user input
+     * @return : A string of n related words based on word
      * @throws IOException
      */
     public String wordsNearest(String word, int n) {
@@ -489,9 +489,14 @@ public class SearchEngine {
     }
 
     /**
+     * Below are several ways we have build the query string. 
+     */
+
+    /**
      * Simplest query builder, just adds the topic to the query.
-     * @param query
-     * @return
+     * @param query : The query itself 
+     * @param topic : The topic of the current question/query
+     * @return - We end up returning the concatenation of the query and topic
      * @throws IOException
      */
     public String queryBuilderV1(String query, String topic) throws IOException {
@@ -500,8 +505,9 @@ public class SearchEngine {
 
     /**
      * Adds the topic and the keywords to the query.
-     * @param query
-     * @return
+     * @param query : The query itself 
+     * @param topic : The topic of the current question/query
+     * @return - We end up returning the concatenation of the query and topic
      * @throws IOException
      */
     public String queryBuilderV2(String query, String topic) throws IOException {
@@ -510,8 +516,9 @@ public class SearchEngine {
 
     /**
      * Adds the topic, keywords, and synonyms to the query.
-     * @param query
-     * @return
+     * @param query : The query itself 
+     * @param topic : The topic of the current question/query
+     * @return - We end up returning the concatenation of the query and topic
      * @throws IOException
      */
     public String queryBuilderV3(String query, String topic) throws IOException, JWNLException {
