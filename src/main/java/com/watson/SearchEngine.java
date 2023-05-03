@@ -230,7 +230,7 @@ public class SearchEngine {
         LMDirichletSimilarity classic = new LMDirichletSimilarity();
         searcher.setSimilarity(classic);
 
-        String preQuery = queryBuilderV4(query, topic);
+        String preQuery = queryBuilderV2(query, topic);
 
         QueryParser parser = new QueryParser("content", analyzerV2);
         TopDocs results = searcher.search(parser.parse(preQuery), n);
@@ -244,7 +244,7 @@ public class SearchEngine {
             results = QueryRescorer.rescore(searcher, results, parser.parse(capitalCities), 1, n);
         }
 
-        results = QueryRescorer.rescore(searcher, results, parser.parse(modelExpansion(preQuery, 1)), 0.05, n);
+        results = QueryRescorer.rescore(searcher, results, parser.parse(modelExpansion(preQuery, 2)), 0.18, n);
 
         int count = 0;
         for (ScoreDoc scoreDoc : results.scoreDocs) {
@@ -440,7 +440,7 @@ public class SearchEngine {
     }
 
     public String queryBuilderV4(String query, String topic) throws IOException, JWNLException {
-        return topic + " " + query + " " + locationNameExtract(query);
+        return queryBuilderV2(query, topic) + " " + locationNameExtract(query);
     }
 
     public String queryBuilderV5(String query, String topic) throws IOException, JWNLException {

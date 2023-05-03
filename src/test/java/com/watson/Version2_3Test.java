@@ -51,7 +51,6 @@ public class Version2_3Test
                 try {
                     String queryString = engine.queryBuilderV2(query, topic);
                     ArrayList<Document> documents = engine.searchV2_2(queryString, cap);
-                    //ArrayList<Document> documents = engine.searchV2_3(query, topic, cap);
                     for (Document doc : documents) {
                         // In the case that there are multiple answers
                         if (answer.contains("|")) {
