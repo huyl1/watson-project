@@ -13,21 +13,19 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 
-/*  Convert articles in Wikipedia files to Lucene documents. Document is the intermediate object. */
+/**
+ * This class is used to parse the Wikipedia dump file and return a list of
+ * Lucene Document objects. Each Document object contains two fields: title and
+ * content. The title field is the title of the Wikipedia article, and the
+ * content field is the content of the Wikipedia article. The content field is not
+ * saved after the index is built.
+ */
 public class WikipediaParser {
-    public static void main(String[] args) {
-        ArrayList<Document> articles = parserV4("dataset/wiki-example.txt");
-        System.out.println(articles.size());
-        //print the 3rd article
-        // System.out.println(articles.get(2).get("title"));
-        // System.out.println(articles.get(2).get("content"));
-
-    }
 
     /**
-     * Parse a Wikipedia dump file and return a list of Document objects. 
-     * Each page starts with its title, encased in double 
-     * square brackets. For example, BBC’s page starts with “[[BBC]]”
+     * Parse a Wikipedia dump file and return a list of Document objects.
+     * The first parser version removes all categories, links, and references,
+     * and everything after "See also" section. All section headers are also removed.
      * @param file_name
      */
     public static ArrayList<Document> parserV1(String file_name) {
@@ -83,6 +81,12 @@ public class WikipediaParser {
         return articles;
     }
 
+    /**
+     * The second parser version removes all categories and section headers. However,
+     * keeps links and "See also" section.
+     * @param file_name
+     * @return
+     */
     public static ArrayList<Document> parserV2(String file_name) {
         ArrayList<Document> articles = new ArrayList<>();
         //open file_name
@@ -130,6 +134,11 @@ public class WikipediaParser {
         return articles;
     }
 
+    /**
+     * Same as V2.
+     * @param file_name
+     * @return
+     */
     public static ArrayList<Document> parserV3(String file_name) {
         ArrayList<Document> articles = new ArrayList<>();
         //open file_name
@@ -227,41 +236,6 @@ public class WikipediaParser {
         } catch (IOException e) {
             System.out.println(e);
         }
-
-        return articles;
-    }
-
-    public static ArrayList<String> parserV5(File file) throws IOException {
-        ArrayList<String> articles = new ArrayList<>();
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        String line;
-        Document buffer = null;
-        String content_buffer = null;
-
-        while ((line = br.readLine()) != null) {
-            //if line starts with [[ and end with ]], then it is a title
-            //create a new Document object
-            //containing the title, and the content until the next title
-            if (line.startsWith("[[") && line.endsWith("]]")) {
-                if (buffer != null) {
-                    //clean the content
-                    content_buffer = markUpRemover(content_buffer);
-                    //make it ascii
-                    content_buffer = Normalizer.normalize(content_buffer, Normalizer.Form.NFKD).replaceAll("[^\\p{ASCII}]", ""); 
-                    buffer.add(new TextField("content", content_buffer, Field.Store.NO));
-                    articles.add(content_buffer + "\n\n");
-                }
-                buffer = new Document();
-                buffer.add(new StringField("title", line.substring(2, line.length() - 2), Field.Store.YES));
-                content_buffer = line.substring(2, line.length() - 2);
-            } else {
-                if (!line.startsWith("==")) {
-                    content_buffer += line + " \n";
-                }
-            }
-        }
-        articles.add(content_buffer + "\n");
-        br.close();
 
         return articles;
     }

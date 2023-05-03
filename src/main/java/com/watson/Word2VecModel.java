@@ -18,6 +18,9 @@ import org.deeplearning4j.text.sentenceiterator.SentenceIterator;
 import org.deeplearning4j.text.tokenization.tokenizer.preprocessor.CommonPreprocessor;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFactory;
 
+/**
+ * This class is used to train the Word2Vec model on the Wikipedia dataset.
+ */
 public class Word2VecModel {
 
     public static void main(String[] args) throws IOException {
