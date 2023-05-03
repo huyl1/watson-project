@@ -36,6 +36,12 @@ public class AnalyzerTester {
         
     }
 
+    /**
+     * Tokenize a string using a given analyzer.
+     * @param analyzer
+     * @param string
+     * @return
+     */
     public static List<String> tokenizeString(Analyzer analyzer, String string) {
         List<String> result = new ArrayList<String>();
         try {
