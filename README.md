@@ -3,7 +3,7 @@ This repository is aimed at replicating IBM's complex Question Answering system,
 The system classifies Wikipedia pages and attempts to find their respective articles based on a given query or question.
 ## Installation
 Before running the program, make sure you have [Maven](https://maven.apache.org/install.html) installed and setup correctly. <br><br>
-Make sure to run command in directory of the program before running:
+To install the project's dependencies, run the following command from the directory where the program is located:
 ```
 $ mvn install
 ```
