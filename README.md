@@ -8,7 +8,7 @@ To install the project's dependencies, run the following command from the direct
 $ mvn install
 ```
 ## Running the Program
-To run the a demo of the program, go into: 
+To run a demo of the program, go into: 
 ```
 src/main/java/com/watson/App.java
 ```
