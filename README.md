@@ -18,7 +18,7 @@ $ javac App.java | java App
 ```
 The program will then build the index (stemming) based on the contents of the 'questions.txt' file in the datasets folder. <br><br>
 After that, it will prompt the user to input a query, and return the associated documents related to the user's query, in this case, a Wikipedia title. <br><br>
-Did we get it right?
+Did we get it right? :)
 ## Libraries Used
 [Extended Java WordNet Library](https://extjwnl.sourceforge.net/) (extJWNL) <br><br>
 [Rapid Automatic Keyword Extraction](https://github.com/Linguistic/rake) (R.A.K.E.) <br><br>
