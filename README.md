@@ -16,8 +16,8 @@ Either compile and run the code using your IDE's internal Java compiler, or exec
 ```
 $ javac App.java | java App
 ```
-The program will then build the index (stemming) based off the questions.txt within datasets. <br><br>
-It will then prompt the user to input a query, and return the associated documents related to the user's query. In this case, a Wikipedia title. <br><br>
+The program will then build the index (stemming) based on the contents of the 'questions.txt' file in the datasets folder. <br><br>
+After that, it will prompt the user to input a query, and return the associated documents related to the user's query, in this case, a Wikipedia title. <br><br>
 Did we get it right?
 ## Libraries Used
 [Extended Java WordNet Library](https://extjwnl.sourceforge.net/) (extJWNL) <br><br>
