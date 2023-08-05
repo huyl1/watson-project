@@ -23,3 +23,6 @@ Did we get it right? :)
 [Extended Java WordNet Library](https://extjwnl.sourceforge.net/) (extJWNL) <br><br>
 [Rapid Automatic Keyword Extraction](https://github.com/Linguistic/rake) (R.A.K.E.) <br><br>
 [Word2Vec](https://deeplearning4j.konduit.ai/v/en-1.0.0-beta7/language-processing/word2vec)
+
+## Report
+[Error Analysis](https://docs.google.com/document/d/1Ao0VPE4fVg_RtU-H6f-96Ba3GyGQTtuwigMvBLmfmyI/edit?usp=sharing)
