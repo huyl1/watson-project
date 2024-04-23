@@ -1,4 +1,4 @@
-# Wastson Project
+# Watson Project
 This repository is aimed at replicating IBM's complex Question Answering system, Watson. <br><br>
 The system classifies Wikipedia pages and attempts to find their respective articles based on a given query or question.
 ## Installation
