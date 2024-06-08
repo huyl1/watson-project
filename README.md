@@ -28,4 +28,4 @@ Did we get it right? :)
 [Word2Vec](https://deeplearning4j.konduit.ai/v/en-1.0.0-beta7/language-processing/word2vec)
 
 ## Report
-[Error Analysis](https://docs.google.com/document/d/1Ao0VPE4fVg_RtU-H6f-96Ba3GyGQTtuwigMvBLmfmyI/edit?usp=sharing)
+[Technical Analysis](https://docs.google.com/document/d/1Ao0VPE4fVg_RtU-H6f-96Ba3GyGQTtuwigMvBLmfmyI/edit?usp=sharing)
