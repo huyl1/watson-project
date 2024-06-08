@@ -1,6 +1,7 @@
 # Watson Project
 This repository is aimed at replicating IBM's complex Question Answering system, Watson. <br><br>
 The system classifies Wikipedia pages and attempts to find their respective articles based on a given query or question.
+You can read more about the system in the [Technical Analysis](https://docs.google.com/document/d/1Ao0VPE4fVg_RtU-H6f-96Ba3GyGQTtuwigMvBLmfmyI/edit?usp=sharing)
 
 ![Screenshot 2024-06-08 142903](https://github.com/huyl1/watson-project/assets/57906351/2669aa48-b178-445e-bf15-ad0d443f1e42)
 
