@@ -1,6 +1,9 @@
 # Watson Project
 This repository is aimed at replicating IBM's complex Question Answering system, Watson. <br><br>
 The system classifies Wikipedia pages and attempts to find their respective articles based on a given query or question.
+
+![Screenshot 2024-06-08 142903](https://github.com/huyl1/watson-project/assets/57906351/2669aa48-b178-445e-bf15-ad0d443f1e42)
+
 ## Installation
 Before running the program, make sure you have [Maven](https://maven.apache.org/install.html) installed and setup correctly. <br><br>
 To install the project's dependencies, run the following command from the directory where the program is located:
